@@ -1,9 +1,9 @@
 import express from 'express'
-import { createServer } from 'http'
+// import { createServer } from 'http'
 import { Server } from 'socket.io'
 
 const app = express()
-const httpServer = createServer(app)
+// const httpServer = createServer(app)
 
 import userRoutes from './routes/usersRoute.js'
 
@@ -17,13 +17,13 @@ app.use('/users', userRoutes)
 const PORT = 8000
 
 /* Express server */
-// const server = app.listen(PORT, () => {
-//   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
-// })
+const server = app.listen(PORT, () => {
+  console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
+})
 
 /* Socket.io */
 
-const io = new Server(httpServer, {
+const io = new Server(server, {
   pingTimeout: 60,
   cors: {
     origin: '*',
@@ -39,6 +39,6 @@ io.on('connection', socket => {
   })
 })
 
-httpServer.listen(PORT, () => {
-  console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
-})
+// httpServer.listen(PORT, () => {
+//   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
+// })
