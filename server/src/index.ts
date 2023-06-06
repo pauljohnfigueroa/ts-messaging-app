@@ -12,9 +12,8 @@ app.get('/', (req, res) => {
 
 app.use('/users', userRoutes)
 
-const PORT = 8000
-
 /* Express server */
+const PORT = 8000
 export const server = app.listen(PORT, () => {
   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
 })

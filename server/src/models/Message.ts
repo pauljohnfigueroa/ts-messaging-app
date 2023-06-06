@@ -6,17 +6,22 @@ interface IMessage {
   from: Types.ObjectId
 }
 
-const messageSchema = new Schema<IMessage>({
-  message: {
-    type: String,
-    required: true
+const messageSchema = new Schema<IMessage>(
+  {
+    message: {
+      type: String,
+      required: true
+    },
+    to: {
+      type: Schema.Types.ObjectId
+    },
+    from: {
+      type: Schema.Types.ObjectId
+    }
   },
-  to: {
-    type: Schema.Types.ObjectId
-  },
-  from: {
-    type: Schema.Types.ObjectId
+  {
+    timestamps: true
   }
-})
+)
 
 export const Message = model('Message', messageSchema)

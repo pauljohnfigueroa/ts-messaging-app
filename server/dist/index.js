@@ -13,8 +13,8 @@ app.get('/', (req, res) => {
     res.send('Mabuhay to EXPRESS JS.'); // appears in the frontend
 });
 app.use('/users', usersRoute_js_1.default);
-const PORT = 8000;
 /* Express server */
+const PORT = 8000;
 exports.server = app.listen(PORT, () => {
     console.log(`SUCCESS - The server is listening on PORT ${PORT}`);
 });

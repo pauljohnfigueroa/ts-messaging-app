@@ -6,5 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const usersController_1 = require("../controllers/usersController");
 const router = express_1.default.Router();
+router.post('/register', usersController_1.registerUser);
+router.post('/login', usersController_1.loginUser);
 router.get('/', usersController_1.getUsers);
+router.get('/:userId', usersController_1.getUser);
 exports.default = router;
