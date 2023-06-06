@@ -33,6 +33,3 @@ io.on('connection', socket => {
         console.log('Socket IO - disconnected.');
     });
 });
-// httpServer.listen(PORT, () => {
-//   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
-// })

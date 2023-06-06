@@ -22,7 +22,6 @@ const server = app.listen(PORT, () => {
 })
 
 /* Socket.io */
-
 const io = new Server(server, {
   pingTimeout: 60,
   cors: {
@@ -38,7 +37,3 @@ io.on('connection', socket => {
     console.log('Socket IO - disconnected.')
   })
 })
-
-// httpServer.listen(PORT, () => {
-//   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
-// })
