@@ -4,12 +4,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_1 = require("http");
+const socket_io_1 = require("socket.io");
 const app = (0, express_1.default)();
+const httpServer = (0, http_1.createServer)(app);
+const usersRoute_js_1 = __importDefault(require("./routes/usersRoute.js"));
 app.get('/', (req, res) => {
     console.log('Welcome to Express.'); // logged in the node console
-    res.send('Hello to EXPRESS JS.'); // appears in the frontend
+    res.send('Mabuhay to EXPRESS JS.'); // appears in the frontend
 });
+app.use('/users', usersRoute_js_1.default);
 const PORT = 8000;
-app.listen(PORT, () => {
-    console.log(`Server is listening to ${PORT}`);
+/* Express server */
+// const server = app.listen(PORT, () => {
+//   console.log(`SUCCESS - The server is listening on PORT ${PORT}`)
+// })
+/* Socket.io */
+const io = new socket_io_1.Server(httpServer, {
+    pingTimeout: 60,
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+});
+io.on('connection', socket => {
+    console.log('Socket IO - connection');
+    socket.on('disconnect', () => {
+        console.log('Socket IO - disconnected.');
+    });
+});
+httpServer.listen(PORT, () => {
+    console.log(`SUCCESS - The server is listening on PORT ${PORT}`);
 });
