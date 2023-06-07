@@ -40,7 +40,7 @@ export const getUser = (req: Request, res: Response) => {
 /* Get multiple Users */
 export const getUsers = (req: Request, res: Response) => {
   try {
-    res.status(500).json({ message: `Response from the getUsers controller.` })
+    res.status(200).json({ message: `Response from the getUsers controller.` })
     console.log('getUsers controller')
   } catch (error: any) {
     console.log(error)

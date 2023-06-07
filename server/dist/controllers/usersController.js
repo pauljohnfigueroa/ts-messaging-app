@@ -51,7 +51,7 @@ exports.getUser = getUser;
 /* Get multiple Users */
 const getUsers = (req, res) => {
     try {
-        res.status(500).json({ message: `Response from the getUsers controller.` });
+        res.status(200).json({ message: `Response from the getUsers controller.` });
         console.log('getUsers controller');
     }
     catch (error) {

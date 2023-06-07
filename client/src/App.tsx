@@ -13,8 +13,10 @@ function App() {
   });
 
   return (
-    <div className="App">
-     TS-MESSAGING-APP
+    <div className="bg-green-600">
+      <h1 className="text-3xl font-bold uppercase">
+        Look! We are using TailwindCSS.
+      </h1>
     </div>
   );
 }
