@@ -25,14 +25,17 @@ const userSchema = new Schema<IUser>(
     avatar: {
       type: String
     },
-    activeRooms: {
-      type: [],
-      ref: 'Rooms'
-    }
+    activeRooms: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Room'
+      }
+    ]
   },
   {
     timestamps: true
   }
 )
 
-export const User = model<IUser>('User', userSchema)
+const User = model<IUser>('User', userSchema)
+export default User

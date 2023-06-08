@@ -5,7 +5,7 @@ interface IRoom {
   description: string
   members: Types.Array<Types.ObjectId>
   onlineMembers: Types.Array<Types.ObjectId>
-  isPublic: boolean
+  isPrivate: boolean
 }
 
 const roomSchema = new Schema<IRoom>(
@@ -17,15 +17,19 @@ const roomSchema = new Schema<IRoom>(
     description: {
       type: String
     },
-    members: {
-      type: [],
-      ref: 'User'
-    },
-    onlineMembers: {
-      type: [],
-      ref: 'User'
-    },
-    isPublic: {
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ],
+    onlineMembers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ],
+    isPrivate: {
       type: Boolean,
       required: true
     }
@@ -35,4 +39,5 @@ const roomSchema = new Schema<IRoom>(
   }
 )
 
-export const Room = model('Room', roomSchema)
+const Room = model<IRoom>('Room', roomSchema)
+export default Room
