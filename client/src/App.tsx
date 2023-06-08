@@ -1,4 +1,4 @@
-import Login from './pages/login/Login'
+import Dashboard from './pages/dashboard/Dashboard'
 import {io} from 'socket.io-client'
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
   });
 
   return (
-<Login />
+<Dashboard />
   );
 }
 
