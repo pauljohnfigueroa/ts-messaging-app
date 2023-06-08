@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Room = void 0;
 const mongoose_1 = require("mongoose");
 const roomSchema = new mongoose_1.Schema({
     name: {
@@ -10,19 +9,24 @@ const roomSchema = new mongoose_1.Schema({
     description: {
         type: String
     },
-    members: {
-        type: [],
-        ref: 'User'
-    },
-    onlineMembers: {
-        type: [],
-        ref: 'User'
-    },
-    isPublic: {
+    members: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+    onlineMembers: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+    isPrivate: {
         type: Boolean,
         required: true
     }
 }, {
     timestamps: true
 });
-exports.Room = (0, mongoose_1.model)('Room', roomSchema);
+const Room = (0, mongoose_1.model)('Room', roomSchema);
+exports.default = Room;
