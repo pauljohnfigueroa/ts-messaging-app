@@ -18,7 +18,7 @@ const User_1 = __importDefault(require("../models/User"));
 /* Register a User */
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email, password, password2, avatar } = req.body;
+        const { name, email, password, avatar } = req.body;
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashed = yield bcrypt_1.default.hash(password, salt);
         const newUser = new User_1.default({
@@ -33,15 +33,27 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error registerUser controller. ${error.message}` });
+        res.status(500).json({ message: `Error adding new user. ${error.message}` });
     }
 });
 exports.registerUser = registerUser;
 /* User login */
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.status(200).json({ message: `Response from the loginUser controller.` });
-        console.log('loginUser controller');
+        const { email, password } = req.body;
+        const result = yield User_1.default.findOne({ email });
+        if (!result) {
+            console.log('Invalid email or password');
+            return res.status(200).json({ message: `Invalid email or password` });
+        }
+        const auth = yield bcrypt_1.default.compare(password, result.password);
+        if (!auth) {
+            console.log('Wrong credentials.');
+            return res.status(200).json({ message: `Wrong credentials.` });
+        }
+        result.password = '';
+        console.log(result);
+        res.status(200).json(result);
     }
     catch (error) {
         console.log(error);

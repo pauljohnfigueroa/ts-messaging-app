@@ -22,4 +22,19 @@ export const validateUserData = (req: Request, res: Response, next: NextFunction
 	}
 }
 
-export default validateUserData
+export const validateUserLogin = (req: Request, res: Response, next: NextFunction) => {
+	const userSchema = Joi.object({
+		email: Joi.string().required(),
+		password: Joi.string().required()
+	})
+
+	const { error } = userSchema.validate(req.body)
+
+	if (error) {
+		const msg = error.details.map(item => item.message).join(',')
+		console.log(msg)
+		res.status(400).json({ message: msg })
+	} else {
+		next()
+	}
+}
