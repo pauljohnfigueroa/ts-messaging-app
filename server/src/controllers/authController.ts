@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
+import Joi from 'joi'
 
 /* Register a User */
 export const registerUser = async (req: Request, res: Response) => {
 	try {
-		const { name, email, password, password2, avatar } = req.body
+		// const { name, email, password, password2, avatar } = req.body
 
 		res.status(200).json({ message: `Response from the registerUser controller.` })
 		console.log('registerUser controller')

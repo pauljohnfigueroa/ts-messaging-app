@@ -13,7 +13,7 @@ exports.loginUser = exports.registerUser = void 0;
 /* Register a User */
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email, password, password2, avatar } = req.body;
+        // const { name, email, password, password2, avatar } = req.body
         res.status(200).json({ message: `Response from the registerUser controller.` });
         console.log('registerUser controller');
     }

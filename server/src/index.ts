@@ -1,20 +1,28 @@
 import express from 'express'
 import mongoose from 'mongoose'
-
+import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
-dotenv.config()
-
 import { Server } from 'socket.io'
 
-const app = express()
-
+/* Route handlers */
 import authRoutes from './routes/authRoute.js'
 import userRoutes from './routes/usersRoute.js'
+
+const app = express()
+dotenv.config()
+
+/* Middleware */
+
+/* Must be placed before the route handlers */
+app.use(express.json())
+/* Required by req.body, works in tandem with express.json() */
+app.use(bodyParser.json({ limit: '30mb' }))
+app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
 app.use('/', authRoutes)
 app.use('/users', userRoutes)
 
-/* Database */
+/* Database server */
 mongoose
 	.connect(`${process.env.MONGO_URI}`, {
 		// useNewUrlParser: true, // <-- no longer necessary as per docs
