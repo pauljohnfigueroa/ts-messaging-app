@@ -2,7 +2,7 @@ import express from 'express'
 import { registerUser, loginUser } from '../controllers/authController'
 
 /* Middleware */
-import validateUserData from '../middlewares/validateUserData'
+import { validateUserData } from '../middlewares/validateUserData'
 
 const route = express.Router()
 

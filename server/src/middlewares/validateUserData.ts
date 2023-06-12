@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import Joi from 'joi'
 
-const validateUserData = (req: Request, res: Response, next: NextFunction) => {
+export const validateUserData = (req: Request, res: Response, next: NextFunction) => {
 	const userSchema = Joi.object({
 		name: Joi.string().required(),
 		email: Joi.string().email().required(),
@@ -10,11 +10,13 @@ const validateUserData = (req: Request, res: Response, next: NextFunction) => {
 		password2: Joi.ref('password'),
 		avatar: Joi.string()
 	})
+
 	const { error } = userSchema.validate(req.body)
+
 	if (error) {
 		const msg = error.details.map(item => item.message).join(',')
 		console.log(msg)
-		res.status(400).json({ error: msg })
+		res.status(400).json({ message: msg })
 	} else {
 		next()
 	}

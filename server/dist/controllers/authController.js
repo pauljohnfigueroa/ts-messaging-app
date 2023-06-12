@@ -8,14 +8,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.registerUser = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const User_1 = __importDefault(require("../models/User"));
 /* Register a User */
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const { name, email, password, password2, avatar } = req.body
-        res.status(200).json({ message: `Response from the registerUser controller.` });
-        console.log('registerUser controller');
+        const { name, email, password, password2, avatar } = req.body;
+        const salt = yield bcrypt_1.default.genSalt(10);
+        const hashed = yield bcrypt_1.default.hash(password, salt);
+        const newUser = new User_1.default({
+            name,
+            email,
+            password: hashed,
+            avatar
+        });
+        newUser.save();
+        res.status(200).json(newUser);
+        console.log(newUser);
     }
     catch (error) {
         console.log(error);
