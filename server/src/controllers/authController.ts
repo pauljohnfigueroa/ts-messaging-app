@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
 import User from '../models/User'
 
 /* Register a User */
@@ -40,9 +42,22 @@ export const loginUser = async (req: Request, res: Response) => {
 			console.log('Wrong credentials.')
 			return res.status(200).json({ message: `Wrong credentials.` })
 		}
+
+		/* JWT */
+		const accessToken = jwt.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET!, {
+			expiresIn: '300s'
+		})
+
+		const refreshToken = jwt.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET!, {
+			expiresIn: '1d'
+		})
+
 		result.password = ''
 		console.log(result)
-		res.status(200).json(result)
+
+		/* Best practice: Always store JWTs inside an httpOnly cookie. */
+		res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
+		res.status(200).json({ result, accessToken })
 	} catch (error: any) {
 		console.log(error)
 		res.status(500).json({ message: `Error loginUser controller. ${error.message}` })

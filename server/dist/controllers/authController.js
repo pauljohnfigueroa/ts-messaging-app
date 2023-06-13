@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.registerUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
 /* Register a User */
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,9 +52,18 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('Wrong credentials.');
             return res.status(200).json({ message: `Wrong credentials.` });
         }
+        /* JWT */
+        const accessToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '300s'
+        });
+        const refreshToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET, {
+            expiresIn: '1d'
+        });
         result.password = '';
         console.log(result);
-        res.status(200).json(result);
+        /* Best practice: Always store JWTs inside an httpOnly cookie. */
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.status(200).json({ result, accessToken });
     }
     catch (error) {
         console.log(error);
