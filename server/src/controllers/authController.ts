@@ -44,7 +44,7 @@ export const loginUser = async (req: Request, res: Response) => {
 		}
 		/* JWT */
 		const accessToken = jwt.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET!, {
-			expiresIn: '300s'
+			expiresIn: '60s'
 		})
 		const refreshToken = jwt.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET!, {
 			expiresIn: '1d'
@@ -54,14 +54,32 @@ export const loginUser = async (req: Request, res: Response) => {
 		const updateUser = await User.findOneAndUpdate({ _id: result._id }, { refreshToken })
 		if (updateUser) {
 			/* Best practice: Always store JWTs inside an httpOnly cookie. */
-			res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
+			res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }) // add secure: true in production
 		}
 
 		result.password = ''
-		console.log(result)
+
 		res.status(200).json({ result, accessToken })
 	} catch (error: any) {
-		console.log(error)
 		res.status(500).json({ message: `Error loginUser controller. ${error.message}` })
 	}
+}
+
+/* Logout user */
+export const logoutUser = async (req: Request, res: Response) => {
+	/* Important: Do not forget to also delete the token in the client side */
+
+	/* Check if cookies exist */
+	const cookies = req.cookies
+	if (!cookies?.jwt) return res.sendStatus(401)
+	const refreshToken = cookies.jwt
+	console.log('refreshToken', refreshToken)
+
+	/* remove the refreshToken from the database */
+	const user = await User.findOneAndUpdate({ refreshToken }, { refreshToken: null })
+	/* clear the cookie */
+	res.clearCookie('jwt', { httpOnly: true }) // add secure: true in production
+
+	console.log('user', user)
+	res.sendStatus(204)
 }

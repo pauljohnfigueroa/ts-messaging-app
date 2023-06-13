@@ -12,6 +12,7 @@ const socket_io_1 = require("socket.io");
 /* Route handlers */
 const authRoute_js_1 = __importDefault(require("./routes/authRoute.js"));
 const usersRoute_js_1 = __importDefault(require("./routes/usersRoute.js"));
+const refreshTokenRoute_js_1 = __importDefault(require("./routes/refreshTokenRoute.js"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 /* Middleware */
@@ -23,6 +24,7 @@ app.use(body_parser_1.default.json({ limit: '30mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '30mb', extended: true }));
 app.use('/', authRoute_js_1.default);
 app.use('/users', usersRoute_js_1.default);
+app.use('/refresh', refreshTokenRoute_js_1.default);
 /* Database server */
 mongoose_1.default
     .connect(`${process.env.MONGO_URI}`, {

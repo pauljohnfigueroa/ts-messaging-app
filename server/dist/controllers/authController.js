@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
+exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
@@ -54,7 +54,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         /* JWT */
         const accessToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '300s'
+            expiresIn: '60s'
         });
         const refreshToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
@@ -63,15 +63,30 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const updateUser = yield User_1.default.findOneAndUpdate({ _id: result._id }, { refreshToken });
         if (updateUser) {
             /* Best practice: Always store JWTs inside an httpOnly cookie. */
-            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // add secure: true in production
         }
         result.password = '';
-        console.log(result);
         res.status(200).json({ result, accessToken });
     }
     catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error loginUser controller. ${error.message}` });
     }
 });
 exports.loginUser = loginUser;
+/* Logout user */
+const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    /* Important: Do not forget to also delete the token in the client side */
+    /* Check if cookies exist */
+    const cookies = req.cookies;
+    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
+        return res.sendStatus(401);
+    const refreshToken = cookies.jwt;
+    console.log('refreshToken', refreshToken);
+    /* remove the refreshToken from the database */
+    const user = yield User_1.default.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+    /* clear the cookie */
+    res.clearCookie('jwt', { httpOnly: true }); // add secure: true in production
+    console.log('user', user);
+    res.sendStatus(204);
+});
+exports.logoutUser = logoutUser;

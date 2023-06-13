@@ -8,8 +8,7 @@ const verifyJwt = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader)
         return res.sendStatus(401);
-    console.log('authHeader', authHeader);
-    // get the token
+    /* get the token from the authHeader */
     const token = authHeader.split(' ')[1];
     jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
@@ -17,7 +16,6 @@ const verifyJwt = (req, res, next) => {
         }
         ;
         req.email = decoded.email;
-        console.log('(<any>req).email ', req.email);
         next();
     });
 };
