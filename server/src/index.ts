@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import { Server } from 'socket.io'
 
@@ -15,6 +16,8 @@ dotenv.config()
 
 /* Must be placed before the route handlers */
 app.use(express.json())
+app.use(cookieParser())
+
 /* Required by req.body, works in tandem with express.json() */
 app.use(bodyParser.json({ limit: '30mb' }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))

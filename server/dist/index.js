@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const socket_io_1 = require("socket.io");
 /* Route handlers */
@@ -16,6 +17,7 @@ dotenv_1.default.config();
 /* Middleware */
 /* Must be placed before the route handlers */
 app.use(express_1.default.json());
+app.use((0, cookie_parser_1.default)());
 /* Required by req.body, works in tandem with express.json() */
 app.use(body_parser_1.default.json({ limit: '30mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '30mb', extended: true }));

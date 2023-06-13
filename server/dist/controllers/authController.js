@@ -59,10 +59,14 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const refreshToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
         });
+        /* Save refreshToken to the database */
+        const updateUser = yield User_1.default.findOneAndUpdate({ _id: result._id }, { refreshToken });
+        if (updateUser) {
+            /* Best practice: Always store JWTs inside an httpOnly cookie. */
+            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        }
         result.password = '';
         console.log(result);
-        /* Best practice: Always store JWTs inside an httpOnly cookie. */
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         res.status(200).json({ result, accessToken });
     }
     catch (error) {
