@@ -31,27 +31,27 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
 	try {
 		const { email, password } = req.body
-		const result = await User.findOne({ email })
-		if (!result) {
+		const user = await User.findOne({ email }, { refreshToken: 0 })
+		if (!user) {
 			console.log('Invalid email or password')
-			return res.status(200).json({ message: `Invalid email or password` })
+			return res.status(400).json({ message: `Invalid email or password` })
 		}
 
-		const auth = await bcrypt.compare(password, result!.password)
+		const auth = await bcrypt.compare(password, user!.password)
 		if (!auth) {
 			console.log('Wrong credentials.')
-			return res.status(200).json({ message: `Wrong credentials.` })
+			return res.status(401).json({ message: `Wrong credentials.` })
 		}
 		/* JWT */
-		const accessToken = jwt.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET!, {
+		const accessToken = jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
 			expiresIn: '60s'
 		})
-		const refreshToken = jwt.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET!, {
+		const refreshToken = jwt.sign({ email: user.email }, process.env.REFRESH_TOKEN_SECRET!, {
 			expiresIn: '1d'
 		})
 
 		/* Save refreshToken to the database */
-		const updateUser = await User.findOneAndUpdate({ _id: result._id }, { refreshToken })
+		const updateUser = await User.findOneAndUpdate({ _id: user._id }, { refreshToken })
 
 		/* Best practice: Always store JWTs inside an httpOnly cookie. */
 		if (updateUser) {
@@ -59,9 +59,9 @@ export const loginUser = async (req: Request, res: Response) => {
 			res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
 		}
 
-		result.password = ''
+		user.password = ''
 
-		res.status(200).json({ result, accessToken })
+		res.status(200).json({ user, accessToken })
 	} catch (error: any) {
 		res.status(500).json({ message: `Error loginUser controller. ${error.message}` })
 	}

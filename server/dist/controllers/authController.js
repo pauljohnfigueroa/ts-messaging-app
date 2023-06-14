@@ -42,32 +42,32 @@ exports.registerUser = registerUser;
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        const result = yield User_1.default.findOne({ email });
-        if (!result) {
+        const user = yield User_1.default.findOne({ email }, { refreshToken: 0 });
+        if (!user) {
             console.log('Invalid email or password');
-            return res.status(200).json({ message: `Invalid email or password` });
+            return res.status(400).json({ message: `Invalid email or password` });
         }
-        const auth = yield bcrypt_1.default.compare(password, result.password);
+        const auth = yield bcrypt_1.default.compare(password, user.password);
         if (!auth) {
             console.log('Wrong credentials.');
-            return res.status(200).json({ message: `Wrong credentials.` });
+            return res.status(401).json({ message: `Wrong credentials.` });
         }
         /* JWT */
-        const accessToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '60s'
         });
-        const refreshToken = jsonwebtoken_1.default.sign({ email: result.email }, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
         });
         /* Save refreshToken to the database */
-        const updateUser = yield User_1.default.findOneAndUpdate({ _id: result._id }, { refreshToken });
+        const updateUser = yield User_1.default.findOneAndUpdate({ _id: user._id }, { refreshToken });
         /* Best practice: Always store JWTs inside an httpOnly cookie. */
         if (updateUser) {
             /* add { secure: true } in production */
             res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         }
-        result.password = '';
-        res.status(200).json({ result, accessToken });
+        user.password = '';
+        res.status(200).json({ user, accessToken });
     }
     catch (error) {
         res.status(500).json({ message: `Error loginUser controller. ${error.message}` });

@@ -5,17 +5,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const socket_io_1 = require("socket.io");
+// import corsOptions from './config/corsOptions.js'
 /* Route handlers */
 const authRoute_js_1 = __importDefault(require("./routes/authRoute.js"));
 const usersRoute_js_1 = __importDefault(require("./routes/usersRoute.js"));
 const refreshTokenRoute_js_1 = __importDefault(require("./routes/refreshTokenRoute.js"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
+const corsOptions = {
+    origin: ['http://localhost:3000'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
 /* Middleware */
+/* Cross-Origin */
+app.use((0, cors_1.default)(corsOptions));
 /* Must be placed before the route handlers */
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());

@@ -1,9 +1,12 @@
-import express from 'express'
+import express, { Request } from 'express'
 import mongoose from 'mongoose'
+import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import { Server } from 'socket.io'
+
+// import corsOptions from './config/corsOptions.js'
 
 /* Route handlers */
 import authRoutes from './routes/authRoute.js'
@@ -13,7 +16,16 @@ import refreshRoutes from './routes/refreshTokenRoute.js'
 const app = express()
 dotenv.config()
 
+const corsOptions = {
+	origin: ['http://localhost:3000'],
+	credentials: true,
+	optionsSuccessStatus: 200
+}
+
 /* Middleware */
+
+/* Cross-Origin */
+app.use(cors(corsOptions))
 
 /* Must be placed before the route handlers */
 app.use(express.json())
