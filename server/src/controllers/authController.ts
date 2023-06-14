@@ -52,9 +52,11 @@ export const loginUser = async (req: Request, res: Response) => {
 
 		/* Save refreshToken to the database */
 		const updateUser = await User.findOneAndUpdate({ _id: result._id }, { refreshToken })
+
+		/* Best practice: Always store JWTs inside an httpOnly cookie. */
 		if (updateUser) {
-			/* Best practice: Always store JWTs inside an httpOnly cookie. */
-			res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }) // add secure: true in production
+			/* add { secure: true } in production */
+			res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
 		}
 
 		result.password = ''
@@ -72,14 +74,14 @@ export const logoutUser = async (req: Request, res: Response) => {
 	/* Check if cookies exist */
 	const cookies = req.cookies
 	if (!cookies?.jwt) return res.sendStatus(401)
+
 	const refreshToken = cookies.jwt
-	console.log('refreshToken', refreshToken)
 
 	/* remove the refreshToken from the database */
 	const user = await User.findOneAndUpdate({ refreshToken }, { refreshToken: null })
-	/* clear the cookie */
-	res.clearCookie('jwt', { httpOnly: true }) // add secure: true in production
 
-	console.log('user', user)
+	/* Important: add { secure: true  in production */
+	res.clearCookie('jwt', { httpOnly: true })
+
 	res.sendStatus(204)
 }

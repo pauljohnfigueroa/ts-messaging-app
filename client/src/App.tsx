@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginForm from './pages/login/LoginForm'
 import RegisterForm from './pages/register/RegisterForm'
 import Dashboard from './pages/dashboard/Dashboard'
+import Users from './pages/users/Users'
 
 import { io } from 'socket.io-client'
 
@@ -17,7 +18,7 @@ function App() {
 	})
 
 	/* check if the user is authenticated */
-	const isAuth = false // replace with actual code
+	const isAuth = true // replace with actual code
 
 	return (
 		<div className="App">
@@ -30,6 +31,7 @@ function App() {
 					<Route path="/login" element={<LoginForm />} />
 					<Route path="/register" element={<RegisterForm />} />
 					<Route path="/dashboard" element={isAuth ? <Dashboard /> : <Navigate to="/" />} />
+					<Route path="/users" element={isAuth ? <Users /> : <Navigate to="/" />} />
 				</Routes>
 			</BrowserRouter>
 		</div>

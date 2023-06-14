@@ -61,9 +61,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         /* Save refreshToken to the database */
         const updateUser = yield User_1.default.findOneAndUpdate({ _id: result._id }, { refreshToken });
+        /* Best practice: Always store JWTs inside an httpOnly cookie. */
         if (updateUser) {
-            /* Best practice: Always store JWTs inside an httpOnly cookie. */
-            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // add secure: true in production
+            /* add { secure: true } in production */
+            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
         }
         result.password = '';
         res.status(200).json({ result, accessToken });
@@ -81,12 +82,10 @@ const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
         return res.sendStatus(401);
     const refreshToken = cookies.jwt;
-    console.log('refreshToken', refreshToken);
     /* remove the refreshToken from the database */
     const user = yield User_1.default.findOneAndUpdate({ refreshToken }, { refreshToken: null });
-    /* clear the cookie */
-    res.clearCookie('jwt', { httpOnly: true }); // add secure: true in production
-    console.log('user', user);
+    /* Important: add { secure: true  in production */
+    res.clearCookie('jwt', { httpOnly: true });
     res.sendStatus(204);
 });
 exports.logoutUser = logoutUser;

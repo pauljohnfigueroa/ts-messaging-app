@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
+import User from '../models/User'
 
 /* Get one a User */
-export const getUser = (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
 	const { userId } = req.params
 
 	try {
@@ -14,10 +15,11 @@ export const getUser = (req: Request, res: Response) => {
 }
 
 /* Get multiple Users */
-export const getUsers = (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
 	try {
-		res.status(200).json({ message: `Response from the getUsers controller.` })
-		console.log('getUsers controller')
+		const users = await User.find({})
+		console.log(users)
+		res.status(200).json(users)
 	} catch (error: any) {
 		console.log(error)
 		res.status(500).json({ message: `Error getUsers controller. ${error.message}` })
