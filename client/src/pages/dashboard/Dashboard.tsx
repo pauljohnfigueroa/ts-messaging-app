@@ -2,8 +2,8 @@ import Navigation from '../../components/Navigation'
 
 const Dashboard = () => {
 	return (
-		<div className="grid grid-cols-4 h-screen">
-			<section className="col-span-4 md:col-span-1 bg-violet-700 w-full h-full">
+		<div className="grid grid-cols-6 h-screen">
+			<section className="col-span-6 md:col-span-1 bg-violet-700 w-full h-full">
 				{/* Sidebar */}
 
 				{/* Headings */}
@@ -68,7 +68,7 @@ const Dashboard = () => {
 				</div>
 			</section>
 
-			<main className="col-span-4 md:col-span-3 h-screen w-full">
+			<main className="col-span-6 md:col-span-5 h-screen w-full">
 				{/* Main */}
 				<div className="bg-violet-900">
 					<Navigation />
