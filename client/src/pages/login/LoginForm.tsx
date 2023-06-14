@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import axios from '../../api/axios'
 
@@ -11,6 +11,8 @@ const LoginForm = () => {
 	const [password, setPassword] = useState('')
 
 	const navigate = useNavigate()
+	const location = useLocation()
+	const navigateFrom = location.state?.from?.pathname || '/'
 
 	const login = async (event: any) => {
 		event.preventDefault()
@@ -32,8 +34,13 @@ const LoginForm = () => {
 			const accessToken = response?.data?.accessToken
 			const user = response?.data?.user
 
+			/* reset form fields */
+			setEmail('')
+			setPassword('')
+
 			setAuth({ user, accessToken })
-			navigate('/dashboard')
+			navigate(navigateFrom, { replace: true })
+			// navigate('/dashboard')
 		} catch (err: any) {
 			if (!err?.response) {
 				console.log('No response from server.')
@@ -45,9 +52,6 @@ const LoginForm = () => {
 				console.log('Log in failed.')
 			}
 		}
-		/* reset form fields */
-		setEmail('')
-		setPassword('')
 	}
 
 	return (

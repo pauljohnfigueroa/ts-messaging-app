@@ -5,5 +5,5 @@
 @tailwind utilities;
 
 .button {
-	@apply font-medium rounded-full text-sm px-4 py-2;
+	@apply font-medium rounded-full text-sm px-4 py-2 cursor-pointer;
 }
