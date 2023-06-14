@@ -1,4 +1,6 @@
 import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import axios from '../../api/axios'
 
 import AuthContext from '../../contexts/authContext'
@@ -7,6 +9,8 @@ const LoginForm = () => {
 	const { setAuth } = useContext<any>(AuthContext)
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+
+	const navigate = useNavigate()
 
 	const login = async (event: any) => {
 		event.preventDefault()
@@ -28,9 +32,8 @@ const LoginForm = () => {
 			const accessToken = response?.data?.accessToken
 			const user = response?.data?.user
 
-			console.log(response)
-
 			setAuth({ user, accessToken })
+			navigate('/dashboard')
 		} catch (err: any) {
 			if (!err?.response) {
 				console.log('No response from server.')
@@ -42,7 +45,6 @@ const LoginForm = () => {
 				console.log('Log in failed.')
 			}
 		}
-
 		/* reset form fields */
 		setEmail('')
 		setPassword('')

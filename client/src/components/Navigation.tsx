@@ -1,11 +1,17 @@
+import { useContext } from 'react'
+
 import axios from '../api/axios'
+import AuthContext from '../contexts/authContext'
 
 const Navigation = () => {
+	const { setAuth } = useContext<any>(AuthContext)
+
 	const logout = async () => {
 		try {
 			await axios.get('/logout', {
 				withCredentials: true
 			})
+			setAuth({})
 		} catch (error) {
 			console.log(error)
 		}
@@ -46,13 +52,17 @@ const Navigation = () => {
 							placeholder="Search ..."
 							required
 						/>
-						<button type="submit" className="button text-white bg-yellow-500 hover:bg-yellow-400">
+						<button type="button" className="button text-white bg-yellow-500 hover:bg-yellow-400">
 							Search
 						</button>
 					</div>
 				</form>
 				<div>
-					<button onClick={logout} className="button text-white bg-violet-500 hover:bg-violet-400">
+					<button
+						type="button"
+						onClick={logout}
+						className="button text-white bg-violet-500 hover:bg-violet-400"
+					>
 						Log out
 					</button>
 				</div>
