@@ -10,6 +10,7 @@ const LoginForm = () => {
 
 	const login = async (event: any) => {
 		event.preventDefault()
+
 		try {
 			const response = await axios.post(
 				'/login',
@@ -26,7 +27,9 @@ const LoginForm = () => {
 			)
 			const accessToken = response?.data?.accessToken
 			const user = response?.data?.user
+
 			console.log(response)
+
 			setAuth({ user, accessToken })
 		} catch (err: any) {
 			if (!err?.response) {
