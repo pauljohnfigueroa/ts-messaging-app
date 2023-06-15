@@ -1,4 +1,3 @@
-import { useContext } from 'react'
 import axios from '../api/axios'
 
 // import AuthContext from '../contexts/authContext'
@@ -18,10 +17,12 @@ const useRefreshToken = () => {
 		// 	console.log(response.data.accessToken)
 		// 	return { ...prev, accessToken: response.data.accessToken }
 		// })
+		console.log('response.data', response.data)
+		/* refresh the accessToken */
 		dispatch({ type: 'user/refresh', payload: response.data })
+
 		return response.data.accessToken
 	}
 	return refresh
 }
-
 export default useRefreshToken

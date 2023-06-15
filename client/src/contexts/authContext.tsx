@@ -1,4 +1,4 @@
-import { createContext, useState, useReducer, ReactNode } from 'react'
+import { createContext, useReducer, ReactNode } from 'react'
 
 type ChildrenType = {
 	children: ReactNode
@@ -9,18 +9,19 @@ const AuthContext = createContext({})
 export const authReducer = (state: any, action: any) => {
 	switch (action.type) {
 		case 'user/login':
-			return { user: action.payload }
+			return { ...state, auth: action.payload }
 		case 'user/refresh':
-			return { user: action.payload }
+			return { ...state, auth: { accessToken: action.payload } }
 		case 'user/logout':
-			return { user: null }
+			return { state: null }
 		default:
 			return state
 	}
 }
+
 export const AuthContextProvider = ({ children }: ChildrenType) => {
 	// const [auth, setAuth] = useState({})
-	const [state, dispatch] = useReducer(authReducer, { user: null })
+	const [state, dispatch] = useReducer(authReducer, { auth: null })
 
 	console.log('AuthContextProvider state:', state)
 

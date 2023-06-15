@@ -7,16 +7,13 @@ import Dashboard from './pages/dashboard/Dashboard'
 import Users from './pages/users/Users'
 
 import { io } from 'socket.io-client'
-
-// import AuthContext from './contexts/authContext'
 import { useAuthContext } from './hooks/useAuthContext'
 
 function App() {
-	// const { auth } = useContext<any>(AuthContext)
-	const { user }: any = useAuthContext()
+	const { auth }: any = useAuthContext()
 
 	/* check if the user is authenticated */
-	const isAuth = Boolean(user?.accessToken)
+	const isAuth = Boolean(auth?.accessToken)
 
 	/* Socket.io-client */
 	const socket = io('http://localhost:8000')

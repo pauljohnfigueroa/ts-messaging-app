@@ -1,17 +1,23 @@
-import { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import axios from '../api/axios'
-import AuthContext from '../contexts/authContext'
+// import AuthContext from '../contexts/authContext'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 const Navigation = () => {
-	const { setAuth } = useContext<any>(AuthContext)
+	// const { setAuth } = useContext<any>(AuthContext)
+	const { dispatch }: any = useAuthContext()
+
+	const navigate = useNavigate()
 
 	const logout = async () => {
 		try {
 			await axios.get('/logout', {
 				withCredentials: true
 			})
-			setAuth({})
+			// setAuth({})
+			dispatch({ type: 'user/logout', payload: {} })
+			navigate('/')
 		} catch (error) {
 			console.log(error)
 		}
