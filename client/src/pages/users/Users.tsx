@@ -11,8 +11,8 @@ const Users = () => {
 
 	/* Fetch all users */
 	useEffect(() => {
-		let isMounted = true
-		const controller = new AbortController()
+		// let isMounted = true
+		// const controller = new AbortController()
 
 		const getUsers = async () => {
 			try {
@@ -20,9 +20,10 @@ const Users = () => {
 					// signal: controller.signal
 				})
 				// console.log('response', response.data)
-				isMounted && setUsers(response.data)
+				// isMounted && setUsers(response.data)
+				setUsers(response.data)
 			} catch (err) {
-				console.log('Users')
+				console.log('Refresh Token expired.')
 				navigate('/login', { state: { from: location }, replace: true })
 			}
 		}
@@ -30,8 +31,8 @@ const Users = () => {
 
 		/* clean up */
 		return () => {
-			isMounted = false
-			controller.abort()
+			// isMounted = false
+			// controller.abort()
 		}
 	}, [axiosPrivate, location, navigate])
 

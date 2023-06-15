@@ -6,7 +6,6 @@ import axios from '../../api/axios'
 import AuthContext from '../../contexts/authContext'
 
 const LoginForm = () => {
-	// const { setAuth } = useContext<any>(AuthContext)
 	const { dispatch } = useContext<any>(AuthContext)
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
@@ -32,18 +31,15 @@ const LoginForm = () => {
 					withCredentials: true
 				}
 			)
-			const accessToken = response?.data?.accessToken
-			const user = response?.data?.user
-
 			/* reset form fields */
 			setEmail('')
 			setPassword('')
 
-			//setAuth({ user, accessToken })
-			//dispatch({ user, accessToken })
+			const accessToken = response?.data?.accessToken
+			const user = response?.data?.user
+
 			dispatch({ type: 'user/login', payload: { user, accessToken } })
 			navigate(navigateFrom, { replace: true })
-			// navigate('/dashboard')
 		} catch (err: any) {
 			if (!err?.response) {
 				console.log('No response from server.')
