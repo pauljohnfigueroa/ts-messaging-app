@@ -6,7 +6,8 @@ import axios from '../../api/axios'
 import AuthContext from '../../contexts/authContext'
 
 const LoginForm = () => {
-	const { setAuth } = useContext<any>(AuthContext)
+	// const { setAuth } = useContext<any>(AuthContext)
+	const { dispatch } = useContext<any>(AuthContext)
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
@@ -38,7 +39,9 @@ const LoginForm = () => {
 			setEmail('')
 			setPassword('')
 
-			setAuth({ user, accessToken })
+			//setAuth({ user, accessToken })
+			//dispatch({ user, accessToken })
+			dispatch({ type: 'user/login', payload: { user, accessToken } })
 			navigate(navigateFrom, { replace: true })
 			// navigate('/dashboard')
 		} catch (err: any) {
