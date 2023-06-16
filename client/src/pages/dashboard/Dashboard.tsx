@@ -1,5 +1,6 @@
 import Navigation from '../../components/Navigation'
 import { useNavigate } from 'react-router-dom'
+import BuddyList from '../../components/BuddyList'
 
 const Dashboard = () => {
 	const navigate = useNavigate()
@@ -15,53 +16,12 @@ const Dashboard = () => {
 
 				{/* Headings */}
 				<h1 className="text-yellow-50 text-5xl font-bold px-2 py-4 tracking-wider">Tokativ</h1>
-				<h3 className="text-yellow-300 text-2xl font-bold px-3 py-4 tracking-wider">Tok Buddies</h3>
+
+				{/* BuddyList */}
+				<BuddyList />
 
 				{/* Tok Budddy */}
-				<div className="px-8 flex items-center gap-2">
-					<div className="relative">
-						<img
-							alt="Eric Clapton"
-							src="./assets/images/eric-claptop.jpg"
-							className="w-10 h-10 p-1 rounded-full object-cover"
-						/>
-					</div>
-					<div>
-						<p className="text-md text-gray-100">Eric Clapton</p>
-					</div>
-				</div>
-
-				{/* Tok Budddy */}
-				<div className="px-8 flex items-center gap-2">
-					<div className="relative">
-						<img
-							src="./assets/images/john-wick.jpg"
-							alt="John Wick"
-							className="w-10 h-10 p-1 rounded-full object-cover"
-						/>
-						<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
-					</div>
-					<div>
-						<p className="text-md text-gray-100">John Wick</p>
-					</div>
-				</div>
-
-				{/* Tok Budddy */}
-				<div className="px-8 flex items-center gap-2">
-					<div className="relative">
-						<img
-							src="./assets/images/steve-lukather.jpg"
-							alt="Steve Lukather"
-							className="w-10 h-10 p-1 rounded-full object-cover"
-						/>
-					</div>
-					<div>
-						<p className="text-md text-gray-100">Steve Lukather</p>
-					</div>
-				</div>
-
-				{/* Tok Budddy */}
-				<div className="px-8 flex items-center gap-2">
+				{/* <div className="px-8 flex items-center gap-2">
 					<div className="relative">
 						<img
 							src="./assets/images/joe-satriani.jpg"
@@ -73,7 +33,7 @@ const Dashboard = () => {
 					<div>
 						<p className="text-md text-gray-100">Joe Satriani</p>
 					</div>
-				</div>
+				</div> */}
 
 				{/* Tok Budddy */}
 				<div className="px-8 flex items-center gap-2">

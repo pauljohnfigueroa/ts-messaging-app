@@ -18,7 +18,7 @@ export const getUser = async (req: Request, res: Response) => {
 export const getUsers = async (req: Request, res: Response) => {
 	try {
 		const users = await User.find({})
-		console.log(users)
+		//console.log(users)
 		res.status(200).json(users)
 	} catch (error: any) {
 		console.log(error)

@@ -31,7 +31,7 @@ exports.getUser = getUser;
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield User_1.default.find({});
-        console.log(users);
+        //console.log(users)
         res.status(200).json(users);
     }
     catch (error) {

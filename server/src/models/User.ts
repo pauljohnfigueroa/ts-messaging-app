@@ -7,6 +7,7 @@ interface IUser {
 	avatar: string
 	activeRooms: Types.Array<Types.ObjectId>
 	refreshToken: string
+	isOnline: boolean
 }
 
 const userSchema = new Schema<IUser>(
@@ -34,6 +35,10 @@ const userSchema = new Schema<IUser>(
 		],
 		refreshToken: {
 			type: String
+		},
+		isOnline: {
+			type: Boolean,
+			default: false
 		}
 	},
 	{

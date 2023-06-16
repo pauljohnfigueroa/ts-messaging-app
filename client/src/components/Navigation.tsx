@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 
 import axios from '../api/axios'
-// import AuthContext from '../contexts/authContext'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { AUTH_ACTION_TYPE } from '../contexts/authContext'
 
 const Navigation = () => {
-	// const { setAuth } = useContext<any>(AuthContext)
 	const { dispatch }: any = useAuthContext()
 
 	const navigate = useNavigate()
@@ -15,8 +14,8 @@ const Navigation = () => {
 			await axios.get('/logout', {
 				withCredentials: true
 			})
-			// setAuth({})
-			dispatch({ type: 'user/logout', payload: {} })
+
+			dispatch({ type: AUTH_ACTION_TYPE.LOGOUT, payload: {} })
 			navigate('/')
 		} catch (error) {
 			console.log(error)

@@ -1,40 +1,45 @@
-import { createContext, useReducer, ReactNode } from 'react'
+import { createContext, useReducer, ReactElement } from 'react'
 
-const initState = { auth: null }
-
-type ChildrenType = {
-	children: ReactNode
+const initState = {
+	auth: {
+		accessToken: undefined,
+		user: {}
+	}
 }
 
-const enum AUTH_ACTION_TYPE {
-	LOGIN = 'user/login',
-	REFRESH = 'user/refresh',
-	LOGOUT = 'user/logout'
-}
-
-interface authState {
-	state?: object | null
-	auth?: object | null
+export const enum AUTH_ACTION_TYPE {
+	LOGIN,
+	REFRESH,
+	LOGOUT
 }
 
 type AuthReducerAction = {
 	type: AUTH_ACTION_TYPE
-	payload: typeof initState
+	payload?: typeof initState
+}
+
+type authState = {
+	state?: object | null
+	auth?: object | null
 }
 
 const AuthContext = createContext({})
 
 export const authReducer = (state: authState, action: AuthReducerAction): authState => {
 	switch (action.type) {
-		case 'user/login':
+		case AUTH_ACTION_TYPE.LOGIN:
 			return { ...state, auth: action.payload }
-		case 'user/refresh':
+		case AUTH_ACTION_TYPE.REFRESH:
 			return { ...state, auth: { accessToken: action.payload } }
-		case 'user/logout':
+		case AUTH_ACTION_TYPE.LOGOUT:
 			return { state: null }
 		default:
 			return state
 	}
+}
+
+type ChildrenType = {
+	children?: ReactElement
 }
 
 export const AuthContextProvider = ({ children }: ChildrenType) => {

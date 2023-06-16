@@ -4,6 +4,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
 import { Server } from 'socket.io'
 
 // import corsOptions from './config/corsOptions.js'
@@ -65,9 +66,28 @@ const io = new Server(server, {
 	}
 })
 
+/* Socket.io middleware */
+
+/* catch userId from front end sent via io { query: { userId: _id } } option */
+io.use((socket: any, next) => {
+	try {
+		//console.log('userId', socket.handshake.query.userId)
+		socket.accessToken = socket.handshake.query.accessToken
+		socket.userId = socket.handshake.query.userId
+		// const payload = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!)
+		console.log('accessToken', socket.accessToken)
+		console.log('userId', socket.userId)
+		//socket.userId = userId
+	} catch (error) {
+		console.log(error)
+	}
+
+	next() // do not forget to call next()
+})
+
 /*  Socket.io on connection */
 io.on('connection', socket => {
-	console.log('Socket IO - connection')
+	console.log(`Socket IO - connection - ${socket.id}`)
 
 	/* on disconnect */
 	socket.on('disconnect', () => {

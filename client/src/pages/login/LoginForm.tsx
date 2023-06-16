@@ -1,9 +1,10 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, MouseEvent } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import axios from '../../api/axios'
 
 import AuthContext from '../../contexts/authContext'
+import { AUTH_ACTION_TYPE } from '../../contexts/authContext'
 
 const LoginForm = () => {
 	const { dispatch } = useContext<any>(AuthContext)
@@ -14,7 +15,7 @@ const LoginForm = () => {
 	const location = useLocation()
 	const navigateFrom = location.state?.from?.pathname || '/'
 
-	const login = async (event: any) => {
+	const login = async (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault()
 
 		try {
@@ -38,7 +39,7 @@ const LoginForm = () => {
 			const accessToken = response?.data?.accessToken
 			const user = response?.data?.user
 
-			dispatch({ type: 'user/login', payload: { user, accessToken } })
+			dispatch({ type: AUTH_ACTION_TYPE.LOGIN, payload: { user, accessToken } })
 			navigate(navigateFrom, { replace: true })
 		} catch (err: any) {
 			if (!err?.response) {

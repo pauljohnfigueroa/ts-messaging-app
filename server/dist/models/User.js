@@ -25,6 +25,10 @@ const userSchema = new mongoose_1.Schema({
     ],
     refreshToken: {
         type: String
+    },
+    isOnline: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
