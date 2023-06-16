@@ -7,51 +7,70 @@ import Users from './pages/users/Users'
 
 import { io } from 'socket.io-client'
 import { useAuthContext } from './hooks/useAuthContext'
+import { useSocketContext } from './hooks/useSocketContext'
+import { SOCKET_ACTION_TYPE } from './contexts/socketContext'
 
 function App() {
 	const { auth }: any = useAuthContext()
-	const [socket, setSocket] = useState<any>(null)
+	const { socket, dispatch }: any = useSocketContext()
+
+	//const [socket, setSocket] = useState<any>(null)
 
 	/* check if the user is authenticated */
 	const isAuth = Boolean(auth?.accessToken)
 
-	/* Socket.io-client */
-	// const socket = io('http://localhost:8000')
-	// socket.on('connect', () => {
-	// 	console.log(`TS Socket connected! - ${socket.id}`)
-	// })
-
-	// socket.on('disconnect', () => {
-	// 	console.log(`TS Socket disconnected! - ${socket.id}`) // undefined
-	// })
-
+	/* Initialize the socket */
 	useEffect(() => {
 		if (isAuth && !socket) {
 			const newSocket = io('http://localhost:8000', {
+				/* autoConnect is set to false so the connection
+				is not established right away.
+				We will manually call socket.connect() later,
+				once the user has selected a username. */
+				//autoConnect: false,
+
+				/* send to server */
 				query: {
 					accessToken: auth?.accessToken,
 					userId: auth?.user?._id
 				}
 			})
-
+			/* socket connect */
 			newSocket.on('connect', () => {
 				console.log(`newSocket on connect ${newSocket.id}`)
 			})
-
+			/* Socket disconnect */
 			newSocket.on('disconnect', () => {
 				console.log(`newSocket on disconnect ${newSocket.id}`)
 			})
-			setSocket(newSocket)
+
+			/* The connect_error event will be emitted upon connection failure:
+				- due to the low-level errors (when the server is down for example)
+				- due to middleware errors */
+			newSocket.on('connect_error', (err: any) => {
+				if (err.message === 'Unauthorized') {
+					console.log('Unauthorized')
+				}
+			})
+			/* socket state */
+			// setSocket(newSocket)
+			dispatch({ type: SOCKET_ACTION_TYPE.CONNECT, payload: newSocket })
 		}
+		/* a user connects */
+		if (socket) {
+			socket.emit('user-connects', socket.id)
+		}
+
 		/* clean up */
 		return () => {
 			if (socket) {
-				console.log('Run clean up.')
 				socket.off('connect')
 				socket.off('disconnect')
+				socket.off('connect_error')
+				console.log('Run clean up.')
 			}
 		}
-	}, [isAuth, socket, setSocket])
+	}, [isAuth, auth, socket, dispatch])
 
 	return (
 		<div className="App">

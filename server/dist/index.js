@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -53,32 +62,39 @@ const server = app.listen(PORT, () => {
 const io = new socket_io_1.Server(server, {
     pingTimeout: 60,
     cors: {
-        origin: '*',
+        origin: 'http://localhost:3000',
         methods: ['get', 'post']
     }
 });
 /* Socket.io middleware */
 /* catch userId from front end sent via io { query: { userId: _id } } option */
-io.use((socket, next) => {
+io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //console.log('userId', socket.handshake.query.userId)
+        //const accessToken = socket.handshake.query.accessToken
         socket.accessToken = socket.handshake.query.accessToken;
+        //const userId = socket.handshake.query.userId
         socket.userId = socket.handshake.query.userId;
-        // const payload = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!)
-        console.log('accessToken', socket.accessToken);
-        console.log('userId', socket.userId);
-        //socket.userId = userId
+        // console.log('accessToken', socket.accessToken)
+        // console.log('userId', socket.userId)
+        if (!socket.accessToken || !socket.userId) {
+            return next(new Error('Unauthorized'));
+        }
+        next(); // do not forget to call next()
     }
     catch (error) {
-        console.log(error);
+        next(new Error(error));
     }
-    next(); // do not forget to call next()
-});
+}));
 /*  Socket.io on connection */
-io.on('connection', socket => {
+io.on('connection', (socket) => {
     console.log(`Socket IO - connection - ${socket.id}`);
     /* on disconnect */
     socket.on('disconnect', () => {
         console.log('Socket IO - disconnected.');
     });
+    /* A user connects */
+    socket.on('user-connects', (err, message) => {
+        console.log('user-connects user.id', socket.id);
+    });
+    //console.log(`socket.on('online-status') - ONLINE: ${socket.userId}`)
 });

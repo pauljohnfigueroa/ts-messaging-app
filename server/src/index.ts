@@ -61,7 +61,7 @@ const server = app.listen(PORT, () => {
 const io = new Server(server, {
 	pingTimeout: 60,
 	cors: {
-		origin: '*',
+		origin: 'http://localhost:3000',
 		methods: ['get', 'post']
 	}
 })
@@ -69,28 +69,36 @@ const io = new Server(server, {
 /* Socket.io middleware */
 
 /* catch userId from front end sent via io { query: { userId: _id } } option */
-io.use((socket: any, next) => {
+io.use(async (socket: any, next) => {
 	try {
-		//console.log('userId', socket.handshake.query.userId)
+		//const accessToken = socket.handshake.query.accessToken
 		socket.accessToken = socket.handshake.query.accessToken
+		//const userId = socket.handshake.query.userId
 		socket.userId = socket.handshake.query.userId
-		// const payload = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!)
-		console.log('accessToken', socket.accessToken)
-		console.log('userId', socket.userId)
-		//socket.userId = userId
-	} catch (error) {
-		console.log(error)
+		// console.log('accessToken', socket.accessToken)
+		// console.log('userId', socket.userId)
+		if (!socket.accessToken || !socket.userId) {
+			return next(new Error('Unauthorized'))
+		}
+		next() // do not forget to call next()
+	} catch (error: any) {
+		next(new Error(error))
 	}
-
-	next() // do not forget to call next()
 })
 
 /*  Socket.io on connection */
-io.on('connection', socket => {
+io.on('connection', (socket: any) => {
 	console.log(`Socket IO - connection - ${socket.id}`)
 
 	/* on disconnect */
 	socket.on('disconnect', () => {
 		console.log('Socket IO - disconnected.')
 	})
+
+	/* A user connects */
+	socket.on('user-connects', (err: any, message: any) => {
+		console.log('user-connects user.id', socket.id)
+	})
+
+	//console.log(`socket.on('online-status') - ONLINE: ${socket.userId}`)
 })

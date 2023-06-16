@@ -1,58 +1,27 @@
 import Navigation from '../../components/Navigation'
-import { useNavigate } from 'react-router-dom'
-import BuddyList from '../../components/BuddyList'
+// import { useNavigate } from 'react-router-dom'
+import Sidebar from '../../components/Sidebar'
 
 const Dashboard = () => {
-	const navigate = useNavigate()
+	// const navigate = useNavigate()
 
-	const users = () => {
-		navigate('/users')
-	}
+	// const users = () => {
+	// 	navigate('/users')
+	// }
 
 	return (
 		<div className="grid grid-cols-6 h-screen">
-			<section className="col-span-6 md:col-span-2 bg-violet-700 w-full h-full">
-				{/* Sidebar */}
+			{/* Sidebar */}
+			<Sidebar />
 
-				{/* Headings */}
-				<h1 className="text-yellow-50 text-5xl font-bold px-2 py-4 tracking-wider">Tokativ</h1>
-
-				{/* BuddyList */}
-				<BuddyList />
-
-				{/* Tok Budddy */}
-				{/* <div className="px-8 flex items-center gap-2">
-					<div className="relative">
-						<img
-							src="./assets/images/joe-satriani.jpg"
-							alt="Joe Satriani"
-							className="w-10 h-10 p-1 rounded-full object-cover"
-						/>
-						<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
-					</div>
-					<div>
-						<p className="text-md text-gray-100">Joe Satriani</p>
-					</div>
-				</div> */}
-
-				{/* Tok Budddy */}
-				<div className="px-8 flex items-center gap-2">
-					<div>
-						<button type="button" className="button hover:cursor-pointer" onClick={users}>
-							Users
-						</button>
-					</div>
-				</div>
-			</section>
-
+			{/* Main */}
 			<main className="col-span-6 md:col-span-4 h-screen w-full">
-				{/* Main */}
 				<div className="bg-violet-900">
 					<Navigation />
 				</div>
 				<div className=" bg-gray-50 p-2 flex gap-2 shadow-md">
 					<div className="relative">
-						{/* Chat Header */}
+						{/* Chat box Header */}
 						<img
 							src="./assets/images/john-wick.jpg"
 							alt="John Wick"
