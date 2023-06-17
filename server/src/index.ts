@@ -4,7 +4,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
-import jwt from 'jsonwebtoken'
+
 import { Server } from 'socket.io'
 
 // import corsOptions from './config/corsOptions.js'
@@ -13,6 +13,7 @@ import { Server } from 'socket.io'
 import authRoutes from './routes/authRoute.js'
 import userRoutes from './routes/usersRoute.js'
 import refreshRoutes from './routes/refreshTokenRoute.js'
+import messagesRoutes from './routes/messagesRoute.js'
 
 const app = express()
 dotenv.config()
@@ -39,6 +40,7 @@ app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use('/', authRoutes)
 app.use('/users', userRoutes)
 app.use('/refresh', refreshRoutes)
+app.use('/messages', messagesRoutes)
 
 /* Database server */
 mongoose

@@ -1,8 +1,23 @@
-import { useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const ChatBox = () => {
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
+	const axiosPrivate = useAxiosPrivate()
+	const [messages, setMessages] = useState([])
+
+	useEffect(() => {
+		const getMessages = async () => {
+			try {
+				const response = await axiosPrivate.get('/messages')
+				setMessages(response.data)
+			} catch (error: any) {
+				console.log(error.message)
+			}
+		}
+		getMessages()
+	}, [axiosPrivate])
 
 	return (
 		<div className="relative flex flex-col h-full">
@@ -26,7 +41,14 @@ const ChatBox = () => {
 			{/* chat messages */}
 			<section className="h-5/6">
 				<div className="px-2 h-[88%] w-full bg-white overflow-auto">
-					<article className="text-left px-2 py-4">
+					{messages.length &&
+						messages.map((message: any) => (
+							<article className="text-left px-2 py-4">
+								<div>{message.sender}</div>
+								<span className="bg-gray-300 px-2 py-4 rounded-2xl">{message.message}</span>
+							</article>
+						))}
+					{/* <article className="text-left px-2 py-4">
 						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Lorem ipsum dolor</span>
 					</article>
 					<article className="text-right px-2 py-4">
@@ -52,7 +74,7 @@ const ChatBox = () => {
 					</article>
 					<article className="text-left px-2 py-4">
 						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-					</article>
+					</article> */}
 				</div>
 			</section>
 			{/* chat text input */}

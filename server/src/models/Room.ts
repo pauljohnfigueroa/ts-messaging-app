@@ -4,7 +4,7 @@ interface IRoom {
 	name: string
 	description: string
 	members: Types.Array<Types.ObjectId>
-	onlineMembers: Types.Array<Types.ObjectId>
+	// onlineMembers: Types.Array<Types.ObjectId>
 	isPrivate: boolean
 }
 
@@ -23,12 +23,12 @@ const roomSchema = new Schema<IRoom>(
 				ref: 'User'
 			}
 		],
-		onlineMembers: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: 'User'
-			}
-		],
+		// onlineMembers: [
+		// 	{
+		// 		type: Schema.Types.ObjectId,
+		// 		ref: 'User'
+		// 	}
+		// ],
 		isPrivate: {
 			type: Boolean,
 			default: true
