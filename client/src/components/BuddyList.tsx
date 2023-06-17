@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 
 import ActiveRoomsContext from '../contexts/activeRoomsContext'
 import { ACTIVE_ROOMS_ACTION_TYPES } from '../contexts/activeRoomsContext'
+import { useSocketContext } from '../hooks/useSocketContext'
 
 export type Users = {
 	_id: string
@@ -15,9 +16,10 @@ export type Users = {
 	isOnline: boolean
 }
 
-type ChatProps = (userId: string, name: string, email: string) => void
+type ChatProps = (userId: string, name: string, email: string, avatar: string) => void
 
 const BuddyList = () => {
+	const { socket }: any = useSocketContext()
 	const { dispatch } = useContext<any>(ActiveRoomsContext)
 
 	const [users, setUsers] = useState<Users[]>([])
@@ -26,9 +28,15 @@ const BuddyList = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 
-	const openChat: ChatProps = (userId, name, email) => {
+	const openChat: ChatProps = (userId, name, email, avatar) => {
 		//alert(`userId: ${userId}`)
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
+		dispatch({
+			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
+			payload: { userId, name, email, avatar }
+		})
+
+		socket.emit('user-private-chat', userId)
 	}
 
 	/* Fetch all users */
@@ -66,7 +74,7 @@ const BuddyList = () => {
 					{users.map((user, i) => (
 						<li key={user._id}>
 							<div
-								onClick={() => openChat(user._id, user.name, user.email)}
+								onClick={() => openChat(user._id, user.name, user.email, user.avatar)}
 								className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
 							>
 								<div className="relative">

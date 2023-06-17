@@ -98,4 +98,11 @@ io.on('connection', (socket: any) => {
 
 	/* will emit to all connected clients, except the socket itself. */
 	socket.broadcast.emit('hello', 'world')
+
+	/* A user emits a private chat from the front-end */
+	socket.on('user-private-chat', (userId: string) => {
+		console.log('user-private-chat userId', userId)
+		/* private group between the two users */
+		socket.join(userId)
+	})
 })

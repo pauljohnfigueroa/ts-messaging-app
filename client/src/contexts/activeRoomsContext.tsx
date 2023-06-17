@@ -1,8 +1,15 @@
 import { createContext, useReducer, ReactElement } from 'react'
 
+type ChatDetailType = {
+	userId?: string
+	name?: string
+	email?: string
+}
+
 const initState = {
 	activeRooms: [],
-	chatBoxOpen: false
+	chatBoxOpen: false,
+	chatDetails: {}
 }
 
 const ActiveRoomsContext = createContext({})
@@ -10,7 +17,8 @@ const ActiveRoomsContext = createContext({})
 export const enum ACTIVE_ROOMS_ACTION_TYPES {
 	JOIN,
 	LEAVE,
-	CHAT_BOX_OPEN
+	CHAT_BOX_OPEN,
+	SET_CHAT_DETAILS
 }
 
 type activeRoomsAction = {
@@ -22,6 +30,7 @@ type activeRoomsState = {
 	state?: object | null
 	activeRooms?: object | null
 	chatBoxOpen?: boolean
+	chatDetails?: ChatDetailType
 }
 
 const activeRoomsReducer = (
@@ -35,6 +44,8 @@ const activeRoomsReducer = (
 			return { ...state, activeRooms: action.payload }
 		case ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN:
 			return { ...state, chatBoxOpen: action.payload }
+		case ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS:
+			return { ...state, chatDetails: action.payload }
 		default:
 			return state
 	}
