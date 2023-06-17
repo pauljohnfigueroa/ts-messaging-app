@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginForm from './pages/login/LoginForm'
 import RegisterForm from './pages/register/RegisterForm'
@@ -14,8 +14,6 @@ function App() {
 	const { auth }: any = useAuthContext()
 	const { socket, dispatch }: any = useSocketContext()
 
-	//const [socket, setSocket] = useState<any>(null)
-
 	/* check if the user is authenticated */
 	const isAuth = Boolean(auth?.accessToken)
 
@@ -27,7 +25,7 @@ function App() {
 				is not established right away.
 				We will manually call socket.connect() later,
 				once the user has selected a username. */
-				//autoConnect: false,
+				autoConnect: false,
 
 				/* send to server */
 				query: {
@@ -53,11 +51,11 @@ function App() {
 				}
 			})
 			/* socket state */
-			// setSocket(newSocket)
 			dispatch({ type: SOCKET_ACTION_TYPE.CONNECT, payload: newSocket })
 		}
 		/* a user connects */
 		if (socket) {
+			socket.connect()
 			socket.emit('user-connects', socket.id)
 		}
 

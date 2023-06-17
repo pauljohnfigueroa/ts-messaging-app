@@ -70,12 +70,8 @@ const io = new socket_io_1.Server(server, {
 /* catch userId from front end sent via io { query: { userId: _id } } option */
 io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //const accessToken = socket.handshake.query.accessToken
         socket.accessToken = socket.handshake.query.accessToken;
-        //const userId = socket.handshake.query.userId
         socket.userId = socket.handshake.query.userId;
-        // console.log('accessToken', socket.accessToken)
-        // console.log('userId', socket.userId)
         if (!socket.accessToken || !socket.userId) {
             return next(new Error('Unauthorized'));
         }
@@ -94,7 +90,8 @@ io.on('connection', (socket) => {
     });
     /* A user connects */
     socket.on('user-connects', (err, message) => {
-        console.log('user-connects user.id', socket.id);
+        console.log('user-connects socket.id', socket.userId);
     });
-    //console.log(`socket.on('online-status') - ONLINE: ${socket.userId}`)
+    /* will emit to all connected clients, except the socket itself. */
+    socket.broadcast.emit('hello', 'world');
 });

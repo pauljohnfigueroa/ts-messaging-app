@@ -71,12 +71,8 @@ const io = new Server(server, {
 /* catch userId from front end sent via io { query: { userId: _id } } option */
 io.use(async (socket: any, next) => {
 	try {
-		//const accessToken = socket.handshake.query.accessToken
 		socket.accessToken = socket.handshake.query.accessToken
-		//const userId = socket.handshake.query.userId
 		socket.userId = socket.handshake.query.userId
-		// console.log('accessToken', socket.accessToken)
-		// console.log('userId', socket.userId)
 		if (!socket.accessToken || !socket.userId) {
 			return next(new Error('Unauthorized'))
 		}
@@ -97,8 +93,9 @@ io.on('connection', (socket: any) => {
 
 	/* A user connects */
 	socket.on('user-connects', (err: any, message: any) => {
-		console.log('user-connects user.id', socket.id)
+		console.log('user-connects socket.id', socket.userId)
 	})
 
-	//console.log(`socket.on('online-status') - ONLINE: ${socket.userId}`)
+	/* will emit to all connected clients, except the socket itself. */
+	socket.broadcast.emit('hello', 'world')
 })

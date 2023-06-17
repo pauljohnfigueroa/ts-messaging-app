@@ -1,13 +1,24 @@
+import { useEffect } from 'react'
 import Navigation from '../../components/Navigation'
 // import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
-
+import { useSocketContext } from '../../hooks/useSocketContext'
 const Dashboard = () => {
 	// const navigate = useNavigate()
 
 	// const users = () => {
 	// 	navigate('/users')
 	// }
+
+	const { socket }: any = useSocketContext()
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('hello', (message: string) => {
+				console.log(message)
+			})
+		}
+	}, [socket])
 
 	return (
 		<div className="grid grid-cols-6 h-screen">

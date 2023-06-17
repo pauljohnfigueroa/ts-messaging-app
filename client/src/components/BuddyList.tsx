@@ -2,12 +2,25 @@ import { useState, useEffect } from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import { useNavigate, useLocation } from 'react-router-dom'
 
+type Users = {
+	name: string
+	email: string
+	avatar: string
+	activeRooms: string[]
+	refreshToken: string
+	isOnline: boolean
+}
+
 const BuddyList = () => {
-	const [users, setUsers] = useState([])
+	const [users, setUsers] = useState<Users[]>([])
 	const axiosPrivate = useAxiosPrivate()
 
 	const navigate = useNavigate()
 	const location = useLocation()
+
+	const openChat = (userId: string) => {
+		alert(`userId: ${userId}`)
+	}
 
 	/* Fetch all users */
 	useEffect(() => {
@@ -42,8 +55,11 @@ const BuddyList = () => {
 			{users?.length ? (
 				<ul>
 					{users.map((user: any, i) => (
-						<li key={i}>
-							<div className="px-8 flex items-center gap-2">
+						<li key={user._id}>
+							<div
+								onClick={e => openChat(user._id)}
+								className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
+							>
 								<div className="relative">
 									<img
 										src={user.avatar}

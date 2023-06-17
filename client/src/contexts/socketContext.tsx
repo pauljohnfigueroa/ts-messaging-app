@@ -39,7 +39,9 @@ type ChildrenType = {
 export const SocketContextProvider = ({ children }: ChildrenType) => {
 	const [state, dispatch] = useReducer(socketReducer, initState)
 
+	console.log('SocketContextProvider state:', state)
 	const values = { ...state, dispatch }
+
 	return <SocketContext.Provider value={values}>{children}</SocketContext.Provider>
 }
 
