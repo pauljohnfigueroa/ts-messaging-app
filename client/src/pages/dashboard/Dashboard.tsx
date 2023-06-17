@@ -22,10 +22,11 @@ const Dashboard = () => {
 	return (
 		<div className="grid grid-cols-6 h-screen">
 			{/* Sidebar */}
-			<Sidebar />
-
+			<section className="col-span-6 md:col-span-2 bg-violet-700 w-full h-full">
+				<Sidebar />
+			</section>
 			{/* Main */}
-			<main className="col-span-6 md:col-span-4 h-screen w-full">
+			<main className="flex flex-col col-span-6 md:col-span-4 h-full w-full bg-slate-700">
 				<Navigation />
 				{chatBoxOpen && <ChatBox />}
 			</main>
