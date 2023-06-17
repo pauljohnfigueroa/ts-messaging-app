@@ -4,13 +4,17 @@ const mongoose_1 = require("mongoose");
 const messageSchema = new mongoose_1.Schema({
     message: {
         type: String,
-        required: true
+        required: [true, 'Cannot send an empty message.']
     },
-    to: {
-        type: mongoose_1.Schema.Types.ObjectId
+    room: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: [true, 'Room id is required.'],
+        ref: 'Room'
     },
-    from: {
-        type: mongoose_1.Schema.Types.ObjectId
+    sender: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: [true, 'Sender is required.'],
+        ref: 'User'
     }
 }, {
     timestamps: true

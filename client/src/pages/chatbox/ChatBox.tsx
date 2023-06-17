@@ -24,20 +24,37 @@ const ChatBox = () => {
 				</div>
 			</div>
 			{/* chat messages */}
-			<div className="h-5/6 w-full bg-violet-100 overflow-auto">
-				<article className="text-left px-2 py-4">
-					<span className="bg-green-300 px-2 py-4 rounded-2xl">Lorem ipsum dolor</span>
-				</article>
-				<article className="text-right px-2 py-4">
-					<span className="bg-blue-300 px-2 py-4 rounded-2xl">Hello World</span>
-				</article>
-				<article className="text-left px-2 py-4">
-					<span className="bg-green-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-				</article>
-				<article className="text-right px-2 py-4">
-					<span className="bg-blue-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
-				</article>
-			</div>
+			<section className="h-5/6">
+				<div className="px-2 h-[88%] w-full bg-white overflow-auto">
+					<article className="text-left px-2 py-4">
+						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Lorem ipsum dolor</span>
+					</article>
+					<article className="text-right px-2 py-4">
+						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Hello World</span>
+					</article>
+					<article className="text-left px-2 py-4">
+						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
+					</article>
+					<article className="text-right px-2 py-4">
+						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
+					</article>
+					<article className="text-left px-2 py-4">
+						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
+					</article>
+					<article className="text-right px-2 py-4">
+						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
+					</article>
+					<article className="text-left px-2 py-4">
+						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
+					</article>
+					<article className="text-right px-2 py-4">
+						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
+					</article>
+					<article className="text-left px-2 py-4">
+						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
+					</article>
+				</div>
+			</section>
 			{/* chat text input */}
 			<div className="flex absolute bottom-0 justify-between p-2 w-full bg-gray-100">
 				<div className="flex justify-between items-center px-1 lg:px-4 w-1/6">

@@ -12,7 +12,7 @@ const roomSchema = new Schema<IRoom>(
 	{
 		name: {
 			type: String,
-			required: true
+			required: [true, 'Name is required.']
 		},
 		description: {
 			type: String
@@ -31,7 +31,6 @@ const roomSchema = new Schema<IRoom>(
 		],
 		isPrivate: {
 			type: Boolean,
-			required: true,
 			default: true
 		}
 	},

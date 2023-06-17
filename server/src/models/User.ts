@@ -14,18 +14,19 @@ const userSchema = new Schema<IUser>(
 	{
 		name: {
 			type: String,
-			required: true
+			required: [true, 'Name is required.']
 		},
 		email: {
 			type: String,
-			required: true
+			required: [true, 'Email is required.']
 		},
 		password: {
 			type: String,
-			required: true
+			required: [true, 'Password is required.']
 		},
 		avatar: {
-			type: String
+			type: String,
+			default: 'default-avatar.jpg'
 		},
 		activeRooms: [
 			{
