@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import { useNavigate, useLocation } from 'react-router-dom'
 
-type Users = {
+import ActiveRoomsContext from '../contexts/activeRoomsContext'
+import { ACTIVE_ROOMS_ACTION_TYPES } from '../contexts/activeRoomsContext'
+
+export type Users = {
+	_id: string
 	name: string
 	email: string
 	avatar: string
@@ -11,15 +15,20 @@ type Users = {
 	isOnline: boolean
 }
 
+type ChatProps = (userId: string, name: string, email: string) => void
+
 const BuddyList = () => {
+	const { dispatch } = useContext<any>(ActiveRoomsContext)
+
 	const [users, setUsers] = useState<Users[]>([])
 	const axiosPrivate = useAxiosPrivate()
 
 	const navigate = useNavigate()
 	const location = useLocation()
 
-	const openChat = (userId: string) => {
-		alert(`userId: ${userId}`)
+	const openChat: ChatProps = (userId, name, email) => {
+		//alert(`userId: ${userId}`)
+		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 	}
 
 	/* Fetch all users */
@@ -54,10 +63,10 @@ const BuddyList = () => {
 			<h3 className="text-yellow-300 text-2xl font-bold px-3 py-4 tracking-wider">Tok Buddies</h3>
 			{users?.length ? (
 				<ul>
-					{users.map((user: any, i) => (
+					{users.map((user, i) => (
 						<li key={user._id}>
 							<div
-								onClick={e => openChat(user._id)}
+								onClick={() => openChat(user._id, user.name, user.email)}
 								className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
 							>
 								<div className="relative">
