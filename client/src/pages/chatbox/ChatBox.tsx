@@ -5,9 +5,9 @@ const ChatBox = () => {
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
 
 	return (
-		<div className="relative flex flex-col bg-slate-100 h-full">
+		<div className="relative flex flex-col h-full">
 			{/* header */}
-			<div className=" bg-gray-50 p-2 flex gap-2 shadow-md">
+			<div className=" bg-white p-2 flex gap-2 shadow-md">
 				{/* avatar */}
 				<div className="relative">
 					<img
@@ -23,8 +23,23 @@ const ChatBox = () => {
 					<p className="text-xs text-gray-500">{chatDetails?.email}</p>
 				</div>
 			</div>
-			<div className="w-full h-4/5 bg-slate-200">Chat messages</div>
-			<div className="flex absolute bottom-1 justify-between p-2 w-full">
+			{/* chat messages */}
+			<div className="h-5/6 w-full bg-violet-100 overflow-auto">
+				<article className="text-left px-2 py-4">
+					<span className="bg-green-300 px-2 py-4 rounded-2xl">Lorem ipsum dolor</span>
+				</article>
+				<article className="text-right px-2 py-4">
+					<span className="bg-blue-300 px-2 py-4 rounded-2xl">Hello World</span>
+				</article>
+				<article className="text-left px-2 py-4">
+					<span className="bg-green-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
+				</article>
+				<article className="text-right px-2 py-4">
+					<span className="bg-blue-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
+				</article>
+			</div>
+			{/* chat text input */}
+			<div className="flex absolute bottom-0 justify-between p-2 w-full bg-gray-100">
 				<div className="flex justify-between items-center px-1 lg:px-4 w-1/6">
 					{/* smiley */}
 					<svg
