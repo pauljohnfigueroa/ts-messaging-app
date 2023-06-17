@@ -25,7 +25,7 @@ const ChatBox = () => {
 			</div>
 			<div className="w-full h-4/5 bg-slate-200">Chat messages</div>
 			<div className="flex absolute bottom-1 justify-between p-2 w-full">
-				<div className="flex justify-between items-center px-4 w-1/6">
+				<div className="flex justify-between items-center px-1 lg:px-4 w-1/6">
 					{/* smiley */}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@ const ChatBox = () => {
 				</div>
 				<input
 					type="text"
-					className="bg-gray-50 border rounded-tl-full rounded-bl-full p-2 block w-4/6"
+					className="bg-white border rounded-tl-full rounded-bl-full p-2 block w-4/6"
 				/>
 				<button type="button" className="rounded-tr-full rounded-br-full bg-violet-500 block w-1/6">
 					Send
