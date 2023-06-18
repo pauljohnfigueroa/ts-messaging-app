@@ -1,9 +1,10 @@
 import express from 'express'
 
-import { getMessages } from '../controllers/messagesController'
+import { createMessage, getMessages } from '../controllers/messagesController'
 
 const route = express.Router()
 
+route.post('/', createMessage)
 route.get('/:roomId', getMessages)
 
 export default route

@@ -2,35 +2,81 @@ import { useState, useContext, useEffect, MouseEvent } from 'react'
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
+import { useAuthContext } from '../../hooks/useAuthContext'
 
 const ChatBox = () => {
+	const { auth }: any = useAuthContext()
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
+
 	const axiosPrivate = useAxiosPrivate()
 	const [messages, setMessages] = useState<any>([])
 	const [messageText, setMessageText] = useState<any>('')
 	const { socket }: any = useSocketContext()
 
+	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault()
+
+		if (socket && messageText.length > 0) {
+			socket.emit('private-message-sent', {
+				message: messageText,
+				room: chatDetails.activeRoom,
+				sender: auth.user._id
+			})
+			//console.log(messageText)
+			setMessages([
+				...messages,
+				{
+					message: messageText,
+					room: chatDetails.activeRoom,
+					sender: auth.user._id
+				}
+			])
+
+			// insert message to the Message collection
+			try {
+				const response = await axiosPrivate.post('/messages', {
+					message: messageText,
+					room: chatDetails.activeRoom,
+					sender: auth.user._id
+				})
+				//console.log('message', response.data)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		setMessageText('')
+	}
+
 	useEffect(() => {
 		const getMessages = async () => {
 			try {
-				const response = await axiosPrivate.get(`/messages/${chatDetails._id}`)
+				const response = await axiosPrivate.get(`/messages/${chatDetails.activeRoom}`)
 				setMessages(response.data)
 			} catch (error: any) {
 				console.log(error.message)
 			}
 		}
 		getMessages()
-	}, [axiosPrivate])
+	}, [axiosPrivate, chatDetails.activeRoom])
 
-	const handleSendMessage = (event: MouseEvent<HTMLButtonElement>) => {
-		event.preventDefault()
-
-		if (socket && messageText.length > 0) {
-			socket.emit('private-message-sent', messageText)
-			console.log(messageText)
+	useEffect(() => {
+		/* a private message was received */
+		if (socket) {
+			socket.on('private-message', async ({ message, room, sender }: any) => {
+				//console.log('on private-message message:', message)
+				setMessages([
+					...messages,
+					{
+						message,
+						room,
+						sender
+					}
+				])
+			})
 		}
-		setMessageText('')
-	}
+	}, [messages, setMessages])
+
+	// console.log('messages', messages)
 
 	return (
 		<div className="relative flex flex-col h-full">
@@ -54,40 +100,13 @@ const ChatBox = () => {
 			{/* chat messages */}
 			<section className="h-5/6">
 				<div className="px-2 h-[88%] w-full bg-white overflow-auto">
-					{messages.length &&
+					{messages.length > 0 &&
 						messages.map((message: any) => (
 							<article className="text-left px-2 py-4">
 								<div>{message.sender}</div>
 								<span className="bg-gray-300 px-2 py-4 rounded-2xl">{message.message}</span>
 							</article>
 						))}
-					{/* <article className="text-left px-2 py-4">
-						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Lorem ipsum dolor</span>
-					</article>
-					<article className="text-right px-2 py-4">
-						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Hello World</span>
-					</article>
-					<article className="text-left px-2 py-4">
-						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-					</article>
-					<article className="text-right px-2 py-4">
-						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
-					</article>
-					<article className="text-left px-2 py-4">
-						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-					</article>
-					<article className="text-right px-2 py-4">
-						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
-					</article>
-					<article className="text-left px-2 py-4">
-						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-					</article>
-					<article className="text-right px-2 py-4">
-						<span className="bg-violet-300 px-2 py-4 rounded-2xl">Keep learning everyday!</span>
-					</article>
-					<article className="text-left px-2 py-4">
-						<span className="bg-gray-300 px-2 py-4 rounded-2xl">Typescript is awesome.</span>
-					</article> */}
 				</div>
 			</section>
 			{/* chat text input */}

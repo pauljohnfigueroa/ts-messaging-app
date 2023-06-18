@@ -37,14 +37,21 @@ const BuddyList = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 
-	const openChat: ChatProps = (userId, buddyId, name, email, avatar) => {
+	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
+		const response = await axiosPrivate.post('/rooms', {
+			name: userId,
+			members: [userId, buddyId]
+		})
+
+		console.log('response.data', response.data)
+		const room = response.data
+		socket.emit('user-private-chat', room._id)
+
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
-			payload: { buddyId, name, email, avatar }
+			payload: { buddyId, name, email, avatar, activeRoom: room._id }
 		})
-
-		socket.emit('user-private-chat', { userId, buddyId })
 	}
 
 	/* Fetch all users */

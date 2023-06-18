@@ -3,19 +3,20 @@ import Room from '../models/Room'
 
 export const createRoom = async (req: Request, res: Response) => {
 	try {
-		const { name, members, isPrivate } = req.body
-		const exist = await Room.findOne({
+		const { name, members } = req.body
+		//console.log(name, members)
+		// check the room already exist
+		const existingRoom = await Room.findOne({
 			members: { $all: members }
 		})
-		if (exist) {
-			console.log('Room exist.')
-			return res.status(500).json('Room exist.')
+		if (existingRoom) {
+			//console.log('Room exist.')
+			return res.status(200).json(existingRoom)
 		}
 		// check if the room exist
 		const newRoom = new Room({
 			name,
-			members,
-			isPrivate
+			members
 		})
 		const savedRoom = await newRoom.save()
 

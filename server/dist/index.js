@@ -97,15 +97,22 @@ io.on('connection', (socket) => {
         console.log('user-connects socket.id', socket.userId);
     });
     /* will emit to all connected clients, except the socket itself. */
-    socket.broadcast.emit('hello', 'world');
+    //socket.broadcast.emit('hello', 'world')
     /* A user emits a private chat from the front-end */
-    socket.on('user-private-chat', (userId) => {
-        console.log('user-private-chat userId', userId);
+    socket.on('user-private-chat', (roomId) => {
+        console.log('user-private-chat roomId', roomId);
         /* private group between the two users */
-        socket.join(userId);
+        socket.join(roomId);
     });
     /* A private message was sent. */
-    socket.on('private-message-sent', (message) => {
-        console.log(message);
+    socket.on('private-message-sent', ({ message, room, sender }) => {
+        console.log('on private-message-sent message:', message);
+        console.log('on private-message-sent room:', room);
+        console.log('on private-message-sent sender:', sender);
+        io.to(room).emit('private-message', {
+            message,
+            room,
+            sender
+        });
     });
 });

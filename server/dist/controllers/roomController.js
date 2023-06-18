@@ -16,19 +16,20 @@ exports.createRoom = void 0;
 const Room_1 = __importDefault(require("../models/Room"));
 const createRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, members, isPrivate } = req.body;
-        const exist = yield Room_1.default.findOne({
+        const { name, members } = req.body;
+        //console.log(name, members)
+        // check the room already exist
+        const existingRoom = yield Room_1.default.findOne({
             members: { $all: members }
         });
-        if (exist) {
-            console.log('Room exist.');
-            return res.status(500).json('Room exist.');
+        if (existingRoom) {
+            //console.log('Room exist.')
+            return res.status(200).json(existingRoom);
         }
         // check if the room exist
         const newRoom = new Room_1.default({
             name,
-            members,
-            isPrivate
+            members
         });
         const savedRoom = yield newRoom.save();
         res.status(200).json(savedRoom);
