@@ -87,7 +87,7 @@ const LoginForm = () => {
 				<div className="p-4">
 					<button
 						className="p-2 rounded text-violet-800 uppercase font-medium bg-yellow-400 hover:text-violet-900 hover:bg-yellow-300 w-full"
-						type="button"
+						type="submit"
 						onClick={login}
 					>
 						Log in

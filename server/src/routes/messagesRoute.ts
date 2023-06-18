@@ -4,6 +4,6 @@ import { getMessages } from '../controllers/messagesController'
 
 const route = express.Router()
 
-route.get('/', getMessages)
+route.get('/:roomId', getMessages)
 
 export default route

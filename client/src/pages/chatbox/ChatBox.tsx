@@ -1,16 +1,17 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, MouseEvent } from 'react'
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const ChatBox = () => {
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
 	const axiosPrivate = useAxiosPrivate()
-	const [messages, setMessages] = useState([])
+	const [messages, setMessages] = useState<any>([])
+	const [messageText, setMessageText] = useState<any>('')
 
 	useEffect(() => {
 		const getMessages = async () => {
 			try {
-				const response = await axiosPrivate.get('/messages')
+				const response = await axiosPrivate.get(`/messages/${chatDetails._id}`)
 				setMessages(response.data)
 			} catch (error: any) {
 				console.log(error.message)
@@ -18,6 +19,12 @@ const ChatBox = () => {
 		}
 		getMessages()
 	}, [axiosPrivate])
+
+	const handleSendMessage = (event: MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault()
+		console.log(messageText)
+		setMessageText('')
+	}
 
 	return (
 		<div className="relative flex flex-col h-full">
@@ -127,13 +134,23 @@ const ChatBox = () => {
 						/>
 					</svg>
 				</div>
-				<input
-					type="text"
-					className="bg-white border rounded-tl-full rounded-bl-full p-2 block w-4/6"
-				/>
-				<button type="button" className="rounded-tr-full rounded-br-full bg-violet-500 block w-1/6">
-					Send
-				</button>
+				<form className="flex w-full">
+					<input
+						type="text"
+						id="message"
+						name="message"
+						value={messageText}
+						onChange={e => setMessageText(e.target.value)}
+						className="bg-white border rounded-tl-full rounded-bl-full p-2 block w-5/6"
+					/>
+					<button
+						type="submit"
+						onClick={handleSendMessage}
+						className=" rounded-tr-full rounded-br-full bg-violet-500 block w-1/6"
+					>
+						Send
+					</button>
+				</form>
 			</div>
 		</div>
 	)

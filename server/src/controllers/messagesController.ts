@@ -1,6 +1,14 @@
 import { Request, Response } from 'express'
+import Message from '../models/Message'
 
-export const getMessages = (req: Request, res: Response) => {
-	console.log('getMessages')
-	res.status(200).json({ messages: 'The messages' })
+export const getMessages = async (req: Request, res: Response) => {
+	const { roomId } = req.params
+	console.log('roomId', roomId)
+	try {
+		const response: any = await Message.find({ room: roomId })
+		console.log(response)
+		res.status(200).json(response.data)
+	} catch (error) {
+		res.status(401).json({ messages: 'HAd problems fetching the data.' })
+	}
 }
