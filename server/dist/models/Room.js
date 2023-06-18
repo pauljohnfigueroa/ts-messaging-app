@@ -4,10 +4,12 @@ const mongoose_1 = require("mongoose");
 const roomSchema = new mongoose_1.Schema({
     name: {
         type: String,
-        required: [true, 'Name is required.']
+        required: [true, 'Name is required.'],
+        default: 'Private Room'
     },
     description: {
-        type: String
+        type: String,
+        default: ''
     },
     members: [
         {

@@ -9,6 +9,6 @@ export const getMessages = async (req: Request, res: Response) => {
 		console.log(response)
 		res.status(200).json(response.data)
 	} catch (error) {
-		res.status(401).json({ messages: 'HAd problems fetching the data.' })
+		res.status(401).json({ messages: 'Can not fetch the data.' })
 	}
 }

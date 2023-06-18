@@ -4,9 +4,11 @@ import { useNavigate, useLocation } from 'react-router-dom'
 
 import ActiveRoomsContext from '../contexts/activeRoomsContext'
 import { ACTIVE_ROOMS_ACTION_TYPES } from '../contexts/activeRoomsContext'
+
+import { useAuthContext } from '../hooks/useAuthContext'
 import { useSocketContext } from '../hooks/useSocketContext'
 
-export type Users = {
+export type Buddy = {
 	_id: string
 	name: string
 	email: string
@@ -16,27 +18,33 @@ export type Users = {
 	isOnline: boolean
 }
 
-type ChatProps = (userId: string, name: string, email: string, avatar: string) => void
+type ChatProps = (
+	userId: string,
+	buddyId: string,
+	name: string,
+	email: string,
+	avatar: string
+) => void
 
 const BuddyList = () => {
+	const { auth }: any = useAuthContext()
 	const { socket }: any = useSocketContext()
 	const { dispatch } = useContext<any>(ActiveRoomsContext)
 
-	const [users, setUsers] = useState<Users[]>([])
+	const [buddies, setUsers] = useState<Buddy[]>([])
 	const axiosPrivate = useAxiosPrivate()
 
 	const navigate = useNavigate()
 	const location = useLocation()
 
-	const openChat: ChatProps = (userId, name, email, avatar) => {
-		//alert(`userId: ${userId}`)
+	const openChat: ChatProps = (userId, buddyId, name, email, avatar) => {
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
-			payload: { userId, name, email, avatar }
+			payload: { buddyId, name, email, avatar }
 		})
 
-		socket.emit('user-private-chat', userId)
+		socket.emit('user-private-chat', { userId, buddyId })
 	}
 
 	/* Fetch all users */
@@ -69,24 +77,26 @@ const BuddyList = () => {
 	return (
 		<article>
 			<h3 className="text-yellow-300 text-2xl font-bold px-3 py-4 tracking-wider">Tok Buddies</h3>
-			{users?.length ? (
+			{buddies?.length ? (
 				<ul>
-					{users.map((user, i) => (
-						<li key={user._id}>
+					{buddies.map((buddy, i) => (
+						<li key={buddy._id}>
 							<div
-								onClick={() => openChat(user._id, user.name, user.email, user.avatar)}
+								onClick={() =>
+									openChat(auth?.user?._id, buddy._id, buddy.name, buddy.email, buddy.avatar)
+								}
 								className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
 							>
 								<div className="relative">
 									<img
-										src={user.avatar}
-										alt={user.name}
+										src={buddy.avatar}
+										alt={buddy.name}
 										className="w-10 h-10 p-1 rounded-full object-cover"
 									/>
 									<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
 								</div>
 								<div>
-									<p className="text-md text-gray-100">{user.name}</p>
+									<p className="text-md text-gray-100">{buddy.name}</p>
 								</div>
 							</div>
 						</li>

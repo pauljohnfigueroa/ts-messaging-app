@@ -155,8 +155,8 @@ const ChatBox = () => {
 						onClick={handleSendMessage}
 						className={
 							messageText.length
-								? 'rounded-tr-full rounded-br-full bg-violet-500 hover:bg-violet-600  block w-1/6'
-								: 'rounded-tr-full rounded-br-full bg-gray-400  block w-1/6 cursor-not-allowed'
+								? 'rounded-tr-full rounded-br-full bg-violet-500 hover:bg-violet-600 block w-1/6'
+								: 'rounded-tr-full rounded-br-full bg-gray-400 block w-1/6 cursor-not-allowed'
 						}
 					>
 						Send

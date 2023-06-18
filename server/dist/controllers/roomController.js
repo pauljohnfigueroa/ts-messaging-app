@@ -12,18 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessages = void 0;
-const Message_1 = __importDefault(require("../models/Message"));
-const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { roomId } = req.params;
-    console.log('roomId', roomId);
+exports.createRoom = void 0;
+const Room_1 = __importDefault(require("../models/Room"));
+const createRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield Message_1.default.find({ room: roomId });
-        console.log(response);
-        res.status(200).json(response.data);
+        const { name, members, isPrivate } = req.body;
+        const exist = yield Room_1.default.findOne({
+            members: { $all: members }
+        });
+        if (exist) {
+            console.log('Room exist.');
+            return res.status(500).json('Room exist.');
+        }
+        // check if the room exist
+        const newRoom = new Room_1.default({
+            name,
+            members,
+            isPrivate
+        });
+        const savedRoom = yield newRoom.save();
+        res.status(200).json(savedRoom);
     }
     catch (error) {
-        res.status(401).json({ messages: 'Can not fetch the data.' });
+        res.status(500).json({ message: error });
     }
 });
-exports.getMessages = getMessages;
+exports.createRoom = createRoom;
