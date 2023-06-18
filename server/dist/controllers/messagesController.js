@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMessages = exports.createMessage = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const Message_1 = __importDefault(require("../models/Message"));
+const ObjectId = mongoose_1.default.Types.ObjectId;
 const createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { message, room, sender } = req.body;
@@ -34,7 +36,30 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { roomId } = req.params;
         console.log('getMessages roomId', roomId);
-        const response = yield Message_1.default.find({ room: roomId });
+        // const response: any = await Message.find({ room: roomId })
+        const response = yield Message_1.default.aggregate([
+            {
+                $match: { room: new ObjectId(roomId) }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'sender',
+                    foreignField: '_id',
+                    as: 'name'
+                }
+            },
+            { $unwind: '$name' },
+            {
+                $project: {
+                    _id: 1,
+                    userId: '$user',
+                    room: '$room',
+                    name: '$name.name',
+                    message: '$message'
+                }
+            }
+        ]);
         //console.log(response)
         res.status(200).json(response);
     }

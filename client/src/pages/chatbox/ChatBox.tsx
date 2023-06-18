@@ -13,16 +13,18 @@ const ChatBox = () => {
 	const [messageText, setMessageText] = useState<any>('')
 	const { socket }: any = useSocketContext()
 
+	/* Send a chat message */
 	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault()
 
+		/* Emit */
 		if (socket && messageText.length > 0) {
 			socket.emit('private-message-sent', {
 				message: messageText,
 				room: chatDetails.activeRoom,
 				sender: auth.user._id
 			})
-			//console.log(messageText)
+			/* Update the messages state */
 			setMessages([
 				...messages,
 				{
@@ -32,14 +34,13 @@ const ChatBox = () => {
 				}
 			])
 
-			// insert message to the Message collection
+			// Save the message to the Message collection
 			try {
-				const response = await axiosPrivate.post('/messages', {
+				await axiosPrivate.post('/messages', {
 					message: messageText,
 					room: chatDetails.activeRoom,
 					sender: auth.user._id
 				})
-				//console.log('message', response.data)
 			} catch (error) {
 				console.log(error)
 			}
@@ -47,6 +48,7 @@ const ChatBox = () => {
 		setMessageText('')
 	}
 
+	/* Fetch the room's message history */
 	useEffect(() => {
 		const getMessages = async () => {
 			try {
@@ -59,24 +61,15 @@ const ChatBox = () => {
 		getMessages()
 	}, [axiosPrivate, chatDetails.activeRoom])
 
+	/* Update the message window when a chat message is received. */
 	useEffect(() => {
-		/* a private message was received */
 		if (socket) {
 			socket.on('private-message', async ({ message, room, sender }: any) => {
-				//console.log('on private-message message:', message)
-				setMessages([
-					...messages,
-					{
-						message,
-						room,
-						sender
-					}
-				])
+				// update the messages state
+				setMessages([...messages, { message, room, sender }])
 			})
 		}
 	}, [messages, setMessages])
-
-	// console.log('messages', messages)
 
 	return (
 		<div className="relative flex flex-col h-full">
@@ -102,9 +95,12 @@ const ChatBox = () => {
 				<div className="px-2 h-[88%] w-full bg-white overflow-auto">
 					{messages.length > 0 &&
 						messages.map((message: any) => (
-							<article className="text-left px-2 py-4">
-								<div>{message.sender}</div>
-								<span className="bg-gray-300 px-2 py-4 rounded-2xl">{message.message}</span>
+							<article
+								key={message._id}
+								className="max-w-[30%] break-words rounded-2xl text-left my-1 px-2 py-4 bg-gray-100"
+							>
+								<div className="px-2 py-1">{message.name}</div>
+								<div className="px-2 py-1">{message.message}</div>
 							</article>
 						))}
 				</div>
