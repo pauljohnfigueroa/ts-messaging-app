@@ -62,8 +62,6 @@ const ChatBox = () => {
 		}
 	}, [messages, setMessages])
 
-	console.log('messages', messages)
-
 	return (
 		<div className="relative flex flex-col h-full">
 			{/* header */}
@@ -90,10 +88,22 @@ const ChatBox = () => {
 						messages.map((message: any) => (
 							<article
 								key={message._id}
-								className="max-w-[30%] break-words rounded-2xl text-left my-1 px-2 py-4 bg-gray-100"
+								className={
+									message.name === auth.user.name ? 'text-right flex justify-end' : 'text-left'
+								}
 							>
-								<div className="px-2 py-1">{message.name}</div>
-								<div className="px-2 py-1">{message.message}</div>
+								<div
+									className={
+										message.name === auth.user.name
+											? 'max-w-[30%] break-words rounded-2xl text-right my-1 px-2 py-4 bg-violet-200'
+											: 'max-w-[30%] break-words rounded-2xl text-left my-1 px-2 py-4 bg-gray-100'
+									}
+								>
+									<div className="px-2 py-1">
+										{message.name === auth.user.name ? 'You' : message.name}
+									</div>
+									<div className="px-2 py-1">{message.message}</div>
+								</div>
 							</article>
 						))}
 				</div>
