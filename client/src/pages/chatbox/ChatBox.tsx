@@ -1,12 +1,14 @@
 import { useState, useContext, useEffect, MouseEvent } from 'react'
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useSocketContext } from '../../hooks/useSocketContext'
 
 const ChatBox = () => {
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
 	const axiosPrivate = useAxiosPrivate()
 	const [messages, setMessages] = useState<any>([])
 	const [messageText, setMessageText] = useState<any>('')
+	const { socket }: any = useSocketContext()
 
 	useEffect(() => {
 		const getMessages = async () => {
@@ -22,7 +24,11 @@ const ChatBox = () => {
 
 	const handleSendMessage = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault()
-		console.log(messageText)
+
+		if (socket && messageText.length > 0) {
+			socket.emit('private-message-sent', messageText)
+			console.log(messageText)
+		}
 		setMessageText('')
 	}
 
@@ -144,9 +150,14 @@ const ChatBox = () => {
 						className="bg-white border rounded-tl-full rounded-bl-full p-2 block w-5/6"
 					/>
 					<button
+						disabled={messageText.length ? false : true}
 						type="submit"
 						onClick={handleSendMessage}
-						className=" rounded-tr-full rounded-br-full bg-violet-500 block w-1/6"
+						className={
+							messageText.length
+								? 'rounded-tr-full rounded-br-full bg-violet-500 hover:bg-violet-600  block w-1/6'
+								: 'rounded-tr-full rounded-br-full bg-gray-400  block w-1/6 cursor-not-allowed'
+						}
 					>
 						Send
 					</button>

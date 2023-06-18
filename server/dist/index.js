@@ -102,4 +102,8 @@ io.on('connection', (socket) => {
         /* private group between the two users */
         socket.join(userId);
     });
+    /* A private message was sent. */
+    socket.on('private-message-sent', (message) => {
+        console.log(message);
+    });
 });
