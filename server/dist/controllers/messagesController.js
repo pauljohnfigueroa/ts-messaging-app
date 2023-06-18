@@ -53,7 +53,7 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             {
                 $project: {
                     _id: 1,
-                    userId: '$user',
+                    // userId: '$user',
                     room: '$room',
                     name: '$name.name',
                     message: '$message'

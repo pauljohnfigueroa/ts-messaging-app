@@ -76,6 +76,7 @@ io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         socket.accessToken = socket.handshake.query.accessToken;
         socket.userId = socket.handshake.query.userId;
+        socket.userName = socket.handshake.query.userName;
         if (!socket.accessToken || !socket.userId) {
             return next(new Error('Unauthorized'));
         }
@@ -106,13 +107,13 @@ io.on('connection', (socket) => {
     });
     /* A private message was sent. */
     socket.on('private-message-sent', ({ message, room, sender }) => {
-        console.log('on private-message-sent message:', message);
-        console.log('on private-message-sent room:', room);
-        console.log('on private-message-sent sender:', sender);
+        // console.log('on private-message-sent message:', message)
+        // console.log('on private-message-sent room:', room)
+        // console.log('on private-message-sent sender:', sender)
         io.to(room).emit('private-message', {
             message,
             room,
-            sender
+            senderName: socket.userName
         });
     });
 });

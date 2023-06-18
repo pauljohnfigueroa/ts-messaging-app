@@ -41,7 +41,7 @@ export const getMessages = async (req: Request, res: Response) => {
 			{
 				$project: {
 					_id: 1,
-					userId: '$user',
+					// userId: '$user',
 					room: '$room',
 					name: '$name.name',
 					message: '$message'

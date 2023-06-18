@@ -24,15 +24,6 @@ const ChatBox = () => {
 				room: chatDetails.activeRoom,
 				sender: auth.user._id
 			})
-			/* Update the messages state */
-			setMessages([
-				...messages,
-				{
-					message: messageText,
-					room: chatDetails.activeRoom,
-					sender: auth.user._id
-				}
-			])
 
 			// Save the message to the Message collection
 			try {
@@ -61,15 +52,17 @@ const ChatBox = () => {
 		getMessages()
 	}, [axiosPrivate, chatDetails.activeRoom])
 
-	/* Update the message window when a chat message is received. */
+	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
 		if (socket) {
-			socket.on('private-message', async ({ message, room, sender }: any) => {
+			socket.on('private-message', async ({ message, room, senderName }: any) => {
 				// update the messages state
-				setMessages([...messages, { message, room, sender }])
+				setMessages([...messages, { message, room, name: senderName }])
 			})
 		}
 	}, [messages, setMessages])
+
+	console.log('messages', messages)
 
 	return (
 		<div className="relative flex flex-col h-full">

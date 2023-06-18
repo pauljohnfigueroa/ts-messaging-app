@@ -30,7 +30,8 @@ function App() {
 				/* send to server */
 				query: {
 					accessToken: auth?.accessToken,
-					userId: auth?.user?._id
+					userId: auth?.user?._id,
+					userName: auth?.user?.name
 				}
 			})
 			/* socket connect */
