@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAuthContext } from '../hooks/useAuthContext'
 import ActiveRoomsContext from '../contexts/activeRoomsContext'
+import { useSocketContext } from '../hooks/useSocketContext'
+
 import { AUTH_ACTION_TYPE } from '../contexts/authContext'
 import { ACTIVE_ROOMS_ACTION_TYPES } from '../contexts/activeRoomsContext'
 
 import axios from '../api/axios'
 
 const Navigation = () => {
+	const { socket }: any = useSocketContext()
 	const authState: any = useAuthContext()
 	const roomsState: any = useContext(ActiveRoomsContext)
 
@@ -21,7 +24,12 @@ const Navigation = () => {
 			})
 			authState.dispatch({ type: AUTH_ACTION_TYPE.LOGOUT, payload: {} })
 			roomsState.dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+
 			navigate('/')
+
+			if (socket) {
+				socket.emit('user-logs-out', authState.auth.user._id)
+			}
 		} catch (error) {
 			console.log(error)
 		}

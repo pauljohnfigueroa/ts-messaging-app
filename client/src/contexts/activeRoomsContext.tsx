@@ -14,7 +14,8 @@ export const enum ACTIVE_ROOMS_ACTION_TYPES {
 	LEAVE,
 	CHAT_BOX_OPEN,
 	SET_CHAT_DETAILS,
-	ONLINE_BUDDIES
+	GO_ONLINE,
+	GO_OFFLINE
 }
 
 type activeRoomsAction = {
@@ -29,11 +30,10 @@ type ChatDetailType = {
 }
 
 type activeRoomsState = {
-	state?: object | null
 	activeRooms?: object | null
 	chatBoxOpen?: boolean
 	chatDetails?: ChatDetailType
-	onlineBuddies?: object | null
+	onlineBuddies?: any | null
 }
 
 const activeRoomsReducer = (
@@ -49,8 +49,11 @@ const activeRoomsReducer = (
 			return { ...state, chatBoxOpen: action.payload }
 		case ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS:
 			return { ...state, chatDetails: action.payload }
-		case ACTIVE_ROOMS_ACTION_TYPES.ONLINE_BUDDIES:
-			return { ...state, onlineBuddies: action.payload }
+		case ACTIVE_ROOMS_ACTION_TYPES.GO_ONLINE:
+			return { onlineBuddies: [...state.onlineBuddies, action.payload] }
+		case ACTIVE_ROOMS_ACTION_TYPES.GO_OFFLINE:
+			return { onlineBuddies: state.onlineBuddies.filter((id: any) => id !== action.payload) }
+
 		default:
 			return state
 	}

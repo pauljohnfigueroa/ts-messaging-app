@@ -88,7 +88,14 @@ const BuddyList = () => {
 	/* A user logs in */
 	useEffect(() => {
 		socket.on('user-logged-in', (userId: string) => {
-			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.ONLINE_BUDDIES, payload: userId })
+			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_ONLINE, payload: userId })
+		})
+	}, [socket, dispatch])
+
+	/* A user logs out */
+	useEffect(() => {
+		socket.on('user-logged-out', (userId: string) => {
+			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_OFFLINE, payload: userId })
 		})
 	}, [socket, dispatch])
 
@@ -117,7 +124,7 @@ const BuddyList = () => {
 												className={
 													onlineBuddies.includes(buddy._id) || buddy.isOnline
 														? 'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
-														: 'bottom-4 right-12 absolute w-3 h-3 bg-gray-200  dark:border-gray-800 rounded-full'
+														: ''
 												}
 											></span>
 										</div>

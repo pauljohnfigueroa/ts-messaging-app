@@ -81,7 +81,10 @@ export const logoutUser = async (req: Request, res: Response) => {
 	const refreshToken = cookies.jwt
 
 	/* remove the refreshToken from the database */
-	const user = await User.findOneAndUpdate({ refreshToken }, { refreshToken: null })
+	const user = await User.findOneAndUpdate(
+		{ refreshToken },
+		{ refreshToken: null, isOnline: false }
+	)
 
 	/* Important: add { secure: true  in production */
 	res.clearCookie('jwt', { httpOnly: true })

@@ -83,7 +83,7 @@ const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         return res.sendStatus(401);
     const refreshToken = cookies.jwt;
     /* remove the refreshToken from the database */
-    const user = yield User_1.default.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+    const user = yield User_1.default.findOneAndUpdate({ refreshToken }, { refreshToken: null, isOnline: false });
     /* Important: add { secure: true  in production */
     res.clearCookie('jwt', { httpOnly: true });
     res.sendStatus(204);

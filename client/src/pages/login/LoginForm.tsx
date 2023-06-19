@@ -43,7 +43,9 @@ const LoginForm = () => {
 
 			dispatch({ type: AUTH_ACTION_TYPE.LOGIN, payload: { user, accessToken } })
 			navigate(navigateFrom, { replace: true })
-			socket.emit('user-logs-in', user._id)
+			if (socket) {
+				socket.emit('user-logs-in', user._id)
+			}
 		} catch (err: any) {
 			if (!err?.response) {
 				console.log('No response from server.')
