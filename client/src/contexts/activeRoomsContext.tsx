@@ -1,8 +1,7 @@
 import { createContext, useReducer, ReactElement } from 'react'
 
 const initState = {
-	activeRooms: [],
-	chatBoxOpen: false,
+	chatBoxOpen: false, // we might need to move this to its own Context
 	chatDetails: {},
 	onlineBuddies: []
 }
@@ -10,8 +9,6 @@ const initState = {
 const ActiveRoomsContext = createContext({})
 
 export const enum ACTIVE_ROOMS_ACTION_TYPES {
-	JOIN,
-	LEAVE,
 	CHAT_BOX_OPEN,
 	SET_CHAT_DETAILS,
 	GO_ONLINE,
@@ -27,6 +24,8 @@ type ChatDetailType = {
 	userId?: string
 	name?: string
 	email?: string
+	avatar?: string
+	activeRoom?: string
 }
 
 type activeRoomsState = {
@@ -41,18 +40,19 @@ const activeRoomsReducer = (
 	action: activeRoomsAction
 ): activeRoomsState => {
 	switch (action.type) {
-		case ACTIVE_ROOMS_ACTION_TYPES.JOIN:
-			return { ...state, activeRooms: action.payload }
-		case ACTIVE_ROOMS_ACTION_TYPES.LEAVE:
-			return { ...state, activeRooms: action.payload }
 		case ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN:
 			return { ...state, chatBoxOpen: action.payload }
 		case ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS:
 			return { ...state, chatDetails: action.payload }
+		// Add newly loged in user in the array
 		case ACTIVE_ROOMS_ACTION_TYPES.GO_ONLINE:
-			return { onlineBuddies: [...state.onlineBuddies, action.payload] }
+			return { ...state, onlineBuddies: [...state.onlineBuddies, action.payload] }
+		// Remove offline user from the array
 		case ACTIVE_ROOMS_ACTION_TYPES.GO_OFFLINE:
-			return { onlineBuddies: state.onlineBuddies.filter((id: any) => id !== action.payload) }
+			return {
+				...state,
+				onlineBuddies: state.onlineBuddies.filter((id: any) => id !== action.payload)
+			}
 
 		default:
 			return state

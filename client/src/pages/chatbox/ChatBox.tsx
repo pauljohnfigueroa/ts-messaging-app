@@ -4,6 +4,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import uuid from 'react-uuid'
+
 const ChatBox = () => {
 	const { auth }: any = useAuthContext()
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)

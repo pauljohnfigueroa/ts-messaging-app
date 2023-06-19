@@ -39,23 +39,23 @@ const BuddyList = () => {
 
 	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
 		// close any open chat window first
-		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 
 		const response = await axiosPrivate.post('/rooms', {
 			name: userId,
 			members: [userId, buddyId]
 		})
 
-		//console.log('response.data', response.data)
 		const room = response.data
-		socket.emit('user-private-chat', room._id)
+		console.log('room._id', room._id)
 
 		// open the chat window
-		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
+		// dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
 			payload: { buddyId, name, email, avatar, activeRoom: room._id }
 		})
+		socket.emit('user-private-chat', room._id)
 	}
 
 	/* Fetch all users */
@@ -87,16 +87,20 @@ const BuddyList = () => {
 
 	/* A user logs in */
 	useEffect(() => {
-		socket.on('user-logged-in', (userId: string) => {
-			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_ONLINE, payload: userId })
-		})
+		if (socket) {
+			socket.on('user-logged-in', (userId: string) => {
+				dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_ONLINE, payload: userId })
+			})
+		}
 	}, [socket, dispatch])
 
 	/* A user logs out */
 	useEffect(() => {
-		socket.on('user-logged-out', (userId: string) => {
-			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_OFFLINE, payload: userId })
-		})
+		if (socket) {
+			socket.on('user-logged-out', (userId: string) => {
+				dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.GO_OFFLINE, payload: userId })
+			})
+		}
 	}, [socket, dispatch])
 
 	return (
@@ -122,8 +126,9 @@ const BuddyList = () => {
 											/>
 											<span
 												className={
-													onlineBuddies.includes(buddy._id) || buddy.isOnline
-														? 'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
+													onlineBuddies?.includes(buddy._id) || buddy.isOnline
+														? //buddy.isOnline
+														  'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
 														: ''
 												}
 											></span>
