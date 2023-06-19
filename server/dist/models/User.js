@@ -18,6 +18,12 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         default: 'default-avatar.jpg'
     },
+    friends: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     activeRooms: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

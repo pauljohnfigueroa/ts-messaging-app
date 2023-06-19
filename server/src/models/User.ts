@@ -5,6 +5,8 @@ interface IUser {
 	email: string
 	password: string
 	avatar: string
+	friends: Types.Array<Types.ObjectId>
+	rooms: Types.Array<Types.ObjectId>
 	activeRooms: Types.Array<Types.ObjectId>
 	refreshToken: string
 	isOnline: boolean
@@ -28,6 +30,12 @@ const userSchema = new Schema<IUser>(
 			type: String,
 			default: 'default-avatar.jpg'
 		},
+		friends: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'User'
+			}
+		],
 		activeRooms: [
 			{
 				type: Schema.Types.ObjectId,
