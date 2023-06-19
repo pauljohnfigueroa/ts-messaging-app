@@ -38,15 +38,19 @@ const BuddyList = () => {
 	const location = useLocation()
 
 	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
+		// close any open chat window first
+		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+
 		const response = await axiosPrivate.post('/rooms', {
 			name: userId,
 			members: [userId, buddyId]
 		})
 
-		console.log('response.data', response.data)
+		//console.log('response.data', response.data)
 		const room = response.data
 		socket.emit('user-private-chat', room._id)
 
+		// open the chat window
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
@@ -86,28 +90,31 @@ const BuddyList = () => {
 			<h3 className="text-yellow-300 text-2xl font-bold px-3 py-4 tracking-wider">Tok Buddies</h3>
 			{buddies?.length ? (
 				<ul>
-					{buddies.map((buddy, i) => (
-						<li key={buddy._id}>
-							<div
-								onClick={() =>
-									openChat(auth?.user?._id, buddy._id, buddy.name, buddy.email, buddy.avatar)
-								}
-								className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
-							>
-								<div className="relative">
-									<img
-										src={buddy.avatar}
-										alt={buddy.name}
-										className="w-10 h-10 p-1 rounded-full object-cover"
-									/>
-									<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
-								</div>
-								<div>
-									<p className="text-md text-gray-100">{buddy.name}</p>
-								</div>
-							</div>
-						</li>
-					))}
+					{buddies.map(
+						(buddy, i) =>
+							buddy.name !== auth.user.name && (
+								<li key={buddy._id}>
+									<div
+										onClick={() =>
+											openChat(auth?.user?._id, buddy._id, buddy.name, buddy.email, buddy.avatar)
+										}
+										className="my-1 px-8 flex items-center gap-2 hover:cursor-pointer hover:bg-violet-900"
+									>
+										<div className="relative">
+											<img
+												src={buddy.avatar}
+												alt={buddy.name}
+												className="w-10 h-10 p-1 rounded-full object-cover"
+											/>
+											<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
+										</div>
+										<div>
+											<p className="text-md text-gray-100">{buddy.name}</p>
+										</div>
+									</div>
+								</li>
+							)
+					)}
 				</ul>
 			) : (
 				<p>No users</p>
