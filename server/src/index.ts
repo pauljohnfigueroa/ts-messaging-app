@@ -70,14 +70,15 @@ const io = new Server(server, {
 	}
 })
 
-/* Socket.io middleware */
+/* Socket.io Middleware */
 
-/* catch userId from front end sent via io { query: { userId: _id } } option */
+/* Data from the front-end sent via io { query: { userId: _id } } option */
 io.use(async (socket: any, next) => {
 	try {
 		socket.accessToken = socket.handshake.query.accessToken
 		socket.userId = socket.handshake.query.userId
 		socket.userName = socket.handshake.query.userName
+
 		if (!socket.accessToken || !socket.userId) {
 			return next(new Error('Unauthorized'))
 		}
@@ -101,22 +102,15 @@ io.on('connection', (socket: any) => {
 		console.log('user-connects socket.id', socket.userId)
 	})
 
-	/* will emit to all connected clients, except the socket itself. */
-	//socket.broadcast.emit('hello', 'world')
-
-	/* A user emits a private chat from the front-end */
+	/* A user openned private chat window in the front-end */
 	socket.on('user-private-chat', (roomId: string) => {
 		console.log('user-private-chat roomId', roomId)
-		/* private group between the two users */
+		/* join a private group between the two users */
 		socket.join(roomId)
 	})
 
 	/* A private message was sent. */
 	socket.on('private-message-sent', ({ message, room, sender }: any) => {
-		// console.log('on private-message-sent message:', message)
-		// console.log('on private-message-sent room:', room)
-		// console.log('on private-message-sent sender:', sender)
-
 		io.to(room).emit('private-message', {
 			message,
 			room,

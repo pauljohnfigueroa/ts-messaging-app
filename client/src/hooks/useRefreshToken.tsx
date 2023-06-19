@@ -1,8 +1,9 @@
 import axios from '../api/axios'
 
 import { useAuthContext } from './useAuthContext'
+import { AUTH_ACTION_TYPE } from '../contexts/authContext'
 
-const useRefreshToken = () => {
+export const useRefreshToken = () => {
 	const { dispatch }: any = useAuthContext()
 
 	const refresh = async () => {
@@ -10,10 +11,9 @@ const useRefreshToken = () => {
 			withCredentials: true
 		})
 		/* refresh the accessToken */
-		dispatch({ type: 'user/refresh', payload: response.data })
+		dispatch({ type: AUTH_ACTION_TYPE.REFRESH, payload: response.data })
 
 		return response.data.accessToken
 	}
 	return refresh
 }
-export default useRefreshToken

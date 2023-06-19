@@ -32,11 +32,11 @@ const createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.createMessage = createMessage;
+/* 	The getMessages function is used to fetch the message history
+    of a room from the Message collection. */
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { roomId } = req.params;
-        console.log('getMessages roomId', roomId);
-        // const response: any = await Message.find({ room: roomId })
         const response = yield Message_1.default.aggregate([
             {
                 $match: { room: new ObjectId(roomId) }
@@ -53,14 +53,12 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             {
                 $project: {
                     _id: 1,
-                    // userId: '$user',
                     room: '$room',
                     name: '$name.name',
                     message: '$message'
                 }
             }
         ]);
-        //console.log(response)
         res.status(200).json(response);
     }
     catch (error) {

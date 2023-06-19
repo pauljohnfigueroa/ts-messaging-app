@@ -1,17 +1,20 @@
-import { useState, useContext, useEffect, MouseEvent } from 'react'
+import { useState, useContext, useEffect, useRef, MouseEvent } from 'react'
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
-
+import uuid from 'react-uuid'
 const ChatBox = () => {
 	const { auth }: any = useAuthContext()
 	const { chatDetails } = useContext<any>(ActiveRoomsContext)
 
 	const axiosPrivate = useAxiosPrivate()
 	const [messages, setMessages] = useState<any>([])
-	const [messageText, setMessageText] = useState<any>('')
+	const [messageText, setMessageText] = useState<string>('')
 	const { socket }: any = useSocketContext()
+
+	const messageRef = useRef<any>('')
+	const latestMessageRef = useRef<any>(null)
 
 	/* Send a chat message */
 	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -60,12 +63,22 @@ const ChatBox = () => {
 				setMessages([...messages, { message, room, name: senderName }])
 			})
 		}
-	}, [messages, setMessages])
+	}, [socket, messages, setMessages])
+
+	/* focus the message input */
+	useEffect(() => {
+		messageRef.current.focus()
+	}, [])
+
+	/* scroll to the latest message (bottom) */
+	useEffect(() => {
+		latestMessageRef?.current.scrollIntoView()
+	}, [messages])
 
 	return (
 		<div className="relative flex flex-col h-full">
 			{/* header */}
-			<div className=" bg-white p-2 flex gap-2 shadow-md">
+			<div className=" bg-violet-50 p-2 flex gap-2 shadow-lg">
 				{/* avatar */}
 				<div className="relative">
 					<img
@@ -83,29 +96,29 @@ const ChatBox = () => {
 			</div>
 			{/* chat messages */}
 			<section className="h-5/6">
-				<div className="px-2 h-[88%] w-full bg-white overflow-auto">
+				<div className="px-2 h-[70vh] w-full bg-white overflow-y-auto">
 					{messages.length > 0 &&
-						messages.map((message: any) => (
+						messages.map((message: any, id: number) => (
 							<article
-								key={message._id}
-								className={
-									message.name === auth.user.name ? 'text-right flex justify-end' : 'text-left'
-								}
+								key={uuid()}
+								className={`flex
+									${message.name === auth.user.name ? 'text-right justify-end' : 'text-left justify-start'}
+									`}
 							>
 								<div
-									className={
-										message.name === auth.user.name
-											? 'max-w-[30%] break-words rounded-2xl text-right my-1 px-2 py-4 bg-violet-200'
-											: 'max-w-[30%] break-words rounded-2xl text-left my-1 px-2 py-4 bg-gray-100'
-									}
+									className={`min-w-[10%] max-w-[40%] break-words rounded-3xl my-1 px-2 
+										${message.name === auth.user.name ? 'py-4 text-right bg-violet-200' : 'py-4 text-left bg-gray-100'}
+										`}
 								>
-									<div className="px-2 py-1">
+									<div className="px-2 py-1 font-bold">
 										{message.name === auth.user.name ? 'You' : message.name}
 									</div>
 									<div className="px-2 py-1">{message.message}</div>
 								</div>
 							</article>
 						))}
+					{/* show the latest message */}
+					<div ref={latestMessageRef} />
 				</div>
 			</section>
 			{/* chat text input */}
@@ -126,7 +139,6 @@ const ChatBox = () => {
 							d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
 						/>
 					</svg>
-
 					{/* upload photo svg */}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -159,23 +171,27 @@ const ChatBox = () => {
 					</svg>
 				</div>
 				<form className="flex w-full">
+					{/* Chat message text input */}
 					<input
 						type="text"
 						id="message"
 						name="message"
 						value={messageText}
+						ref={messageRef}
 						onChange={e => setMessageText(e.target.value)}
-						className="bg-white border rounded-tl-full rounded-bl-full p-2 block w-5/6"
+						className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
 					/>
+					{/* Send message button */}
 					<button
 						disabled={messageText.length ? false : true}
 						type="submit"
 						onClick={handleSendMessage}
-						className={
-							messageText.length
-								? 'rounded-tr-full rounded-br-full bg-violet-500 hover:bg-violet-600 block w-1/6'
-								: 'rounded-tr-full rounded-br-full bg-gray-400 block w-1/6 cursor-not-allowed'
-						}
+						className={`rounded-tr-full rounded-br-full font-bold 
+							${
+								messageText.length
+									? 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
+									: 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
+							}`}
 					>
 						Send
 					</button>

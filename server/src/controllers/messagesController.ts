@@ -20,11 +20,11 @@ export const createMessage = async (req: Request, res: Response) => {
 	}
 }
 
+/* 	The getMessages function is used to fetch the message history 
+	of a room from the Message collection. */
 export const getMessages = async (req: Request, res: Response) => {
 	try {
 		const { roomId } = req.params
-		console.log('getMessages roomId', roomId)
-		// const response: any = await Message.find({ room: roomId })
 		const response: any = await Message.aggregate([
 			{
 				$match: { room: new ObjectId(roomId) }
@@ -41,14 +41,12 @@ export const getMessages = async (req: Request, res: Response) => {
 			{
 				$project: {
 					_id: 1,
-					// userId: '$user',
 					room: '$room',
 					name: '$name.name',
 					message: '$message'
 				}
 			}
 		])
-		//console.log(response)
 		res.status(200).json(response)
 	} catch (error) {
 		res.status(401).json({ messages: 'Can not fetch the data.' })

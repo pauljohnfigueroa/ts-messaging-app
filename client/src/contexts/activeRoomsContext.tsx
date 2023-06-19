@@ -1,11 +1,5 @@
 import { createContext, useReducer, ReactElement } from 'react'
 
-type ChatDetailType = {
-	userId?: string
-	name?: string
-	email?: string
-}
-
 const initState = {
 	activeRooms: [],
 	chatBoxOpen: false,
@@ -24,6 +18,12 @@ export const enum ACTIVE_ROOMS_ACTION_TYPES {
 type activeRoomsAction = {
 	type: ACTIVE_ROOMS_ACTION_TYPES
 	payload?: any
+}
+
+type ChatDetailType = {
+	userId?: string
+	name?: string
+	email?: string
 }
 
 type activeRoomsState = {
