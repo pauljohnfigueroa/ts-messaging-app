@@ -51,7 +51,10 @@ export const loginUser = async (req: Request, res: Response) => {
 		})
 
 		/* Save refreshToken to the database */
-		const updateUser = await User.findOneAndUpdate({ _id: user._id }, { refreshToken })
+		const updateUser = await User.findOneAndUpdate(
+			{ _id: user._id },
+			{ refreshToken, isOnline: true }
+		)
 
 		/* Best practice: Always store JWTs inside an httpOnly cookie. */
 		if (updateUser) {

@@ -60,7 +60,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             expiresIn: '30m'
         });
         /* Save refreshToken to the database */
-        const updateUser = yield User_1.default.findOneAndUpdate({ _id: user._id }, { refreshToken });
+        const updateUser = yield User_1.default.findOneAndUpdate({ _id: user._id }, { refreshToken, isOnline: true });
         /* Best practice: Always store JWTs inside an httpOnly cookie. */
         if (updateUser) {
             /* add { secure: true } in production */

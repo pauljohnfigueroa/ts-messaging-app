@@ -102,6 +102,12 @@ io.on('connection', (socket: any) => {
 		console.log('user-connects socket.id', socket.userId)
 	})
 
+	/* A user logs in */
+	socket.on('user-logs-in', (userId: string) => {
+		console.log('user-logs-in userId', userId)
+		socket.broadcast.emit('user-logged-in', userId)
+	})
+
 	/* A user openned private chat window in the front-end */
 	socket.on('user-private-chat', (roomId: string) => {
 		console.log('user-private-chat roomId', roomId)

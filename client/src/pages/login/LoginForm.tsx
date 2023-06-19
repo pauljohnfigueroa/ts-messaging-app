@@ -4,10 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import axios from '../../api/axios'
 
 import AuthContext from '../../contexts/authContext'
+import { useSocketContext } from '../../hooks/useSocketContext'
 import { AUTH_ACTION_TYPE } from '../../contexts/authContext'
 
 const LoginForm = () => {
 	const { dispatch } = useContext<any>(AuthContext)
+	const { socket }: any = useSocketContext()
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
@@ -41,6 +43,7 @@ const LoginForm = () => {
 
 			dispatch({ type: AUTH_ACTION_TYPE.LOGIN, payload: { user, accessToken } })
 			navigate(navigateFrom, { replace: true })
+			socket.emit('user-logs-in', user._id)
 		} catch (err: any) {
 			if (!err?.response) {
 				console.log('No response from server.')

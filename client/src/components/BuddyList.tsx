@@ -29,7 +29,7 @@ type ChatProps = (
 const BuddyList = () => {
 	const { auth }: any = useAuthContext()
 	const { socket }: any = useSocketContext()
-	const { dispatch } = useContext<any>(ActiveRoomsContext)
+	const { dispatch, onlineBuddies } = useContext<any>(ActiveRoomsContext)
 
 	const [buddies, setUsers] = useState<Buddy[]>([])
 	const axiosPrivate = useAxiosPrivate()
@@ -83,7 +83,14 @@ const BuddyList = () => {
 			// isMounted = false
 			controller.abort()
 		}
-	}, [axiosPrivate, location, navigate])
+	}, [axiosPrivate, location, navigate, onlineBuddies])
+
+	/* A user logs in */
+	useEffect(() => {
+		socket.on('user-logged-in', (userId: string) => {
+			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.ONLINE_BUDDIES, payload: userId })
+		})
+	}, [socket, dispatch])
 
 	return (
 		<article>
@@ -106,7 +113,13 @@ const BuddyList = () => {
 												alt={buddy.name}
 												className="w-10 h-10 p-1 rounded-full object-cover"
 											/>
-											<span className="bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full"></span>
+											<span
+												className={
+													onlineBuddies.includes(buddy._id) || buddy.isOnline
+														? 'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
+														: 'bottom-4 right-12 absolute w-3 h-3 bg-gray-200  dark:border-gray-800 rounded-full'
+												}
+											></span>
 										</div>
 										<div>
 											<p className="text-md text-gray-100">{buddy.name}</p>

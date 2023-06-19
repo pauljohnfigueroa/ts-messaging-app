@@ -3,7 +3,8 @@ import { createContext, useReducer, ReactElement } from 'react'
 const initState = {
 	activeRooms: [],
 	chatBoxOpen: false,
-	chatDetails: {}
+	chatDetails: {},
+	onlineBuddies: []
 }
 
 const ActiveRoomsContext = createContext({})
@@ -12,7 +13,8 @@ export const enum ACTIVE_ROOMS_ACTION_TYPES {
 	JOIN,
 	LEAVE,
 	CHAT_BOX_OPEN,
-	SET_CHAT_DETAILS
+	SET_CHAT_DETAILS,
+	ONLINE_BUDDIES
 }
 
 type activeRoomsAction = {
@@ -31,6 +33,7 @@ type activeRoomsState = {
 	activeRooms?: object | null
 	chatBoxOpen?: boolean
 	chatDetails?: ChatDetailType
+	onlineBuddies?: object | null
 }
 
 const activeRoomsReducer = (
@@ -46,6 +49,8 @@ const activeRoomsReducer = (
 			return { ...state, chatBoxOpen: action.payload }
 		case ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS:
 			return { ...state, chatDetails: action.payload }
+		case ACTIVE_ROOMS_ACTION_TYPES.ONLINE_BUDDIES:
+			return { ...state, onlineBuddies: action.payload }
 		default:
 			return state
 	}
