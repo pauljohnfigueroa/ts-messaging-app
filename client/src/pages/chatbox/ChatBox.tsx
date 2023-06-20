@@ -8,7 +8,7 @@ import uuid from 'react-uuid'
 
 const ChatBox = () => {
 	const { auth }: any = useAuthContext()
-	const { chatDetails } = useContext<any>(ActiveRoomsContext)
+	const { chatDetails, onlineBuddies } = useContext<any>(ActiveRoomsContext)
 
 	const axiosPrivate = useAxiosPrivate()
 	const [messages, setMessages] = useState<any>([])
@@ -58,18 +58,20 @@ const ChatBox = () => {
 	/* Fetch the room's message history */
 	useEffect(() => {
 		let isMounted = true
-		// const controller = new AbortController()
+		const controller = new AbortController()
 		const getMessages = async () => {
 			try {
 				await axiosPrivate
 					.get(`/messages/${chatDetails.activeRoom}`, {
-						// signal: controller.signal
+						signal: controller.signal
 					})
 					.then(response => {
 						isMounted && setMessages(response.data)
 					})
 					.catch(err => {
-						console.log('Messages Axios Error')
+						if (err.name === 'CanceledError') {
+							console.log('CanceledError in messages.')
+						}
 					})
 			} catch (err: any) {
 				console.log('Refresh Token expired in messages.')
@@ -102,9 +104,17 @@ const ChatBox = () => {
 					<img
 						src={`./${chatDetails?.avatar}`}
 						alt={chatDetails?.name}
-						className="w-10 h-10 p-1 rounded-full ring-2 ring-green-600 object-cover"
+						className={`w-10 h-10 p-1 rounded-full object-cover
+							${onlineBuddies.includes(chatDetails.buddyId) ? 'ring-2 ring-green-600' : ''}
+						`}
 					/>
-					<span className="bottom-0 left-7 absolute  w-3.5 h-3.5 bg-green-600 border-2 border-white-500 dark:border-gray-800 rounded-full"></span>
+					<span
+						className={
+							onlineBuddies.includes(chatDetails.buddyId)
+								? 'bottom-0 left-7 absolute  w-3.5 h-3.5 bg-green-600 border-2 border-white-500 dark:border-gray-800 rounded-full'
+								: ''
+						}
+					></span>
 				</div>
 				<div>
 					{/* heading text */}

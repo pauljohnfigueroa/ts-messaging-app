@@ -44,10 +44,10 @@ export const loginUser = async (req: Request, res: Response) => {
 		}
 		/* JWT */
 		const accessToken = jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
-			expiresIn: '120s'
+			expiresIn: '300s'
 		})
 		const refreshToken = jwt.sign({ email: user.email }, process.env.REFRESH_TOKEN_SECRET!, {
-			expiresIn: '300s'
+			expiresIn: '600s'
 		})
 
 		/* Save refreshToken to the database */

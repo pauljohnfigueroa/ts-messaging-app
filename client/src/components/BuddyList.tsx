@@ -58,25 +58,26 @@ const BuddyList = () => {
 			console.log('Refresh Token expired in OpenChat.')
 			navigate('/login', { state: { from: location }, replace: true })
 		}
-		//console.log('room._id', room._id)
 	}
 
 	/* Fetch all users */
 	useEffect(() => {
 		let isMounted = true
-		//const controller = new AbortController()
+		const controller = new AbortController()
 
 		const getUsers = async () => {
 			try {
 				await axiosPrivate
 					.get('/users', {
-						//signal: controller.signal
+						signal: controller.signal
 					})
 					.then(response => {
 						isMounted && setBuddies(response.data)
 					})
 					.catch(err => {
-						console.log('BuddyList Axios Error')
+						if (err.name === 'CanceledError') {
+							console.log('BuddyList CanceledError')
+						}
 					})
 			} catch (err) {
 				console.log('Refresh Token expired in BuddyList.')
@@ -88,7 +89,7 @@ const BuddyList = () => {
 		/* clean up */
 		return () => {
 			isMounted = false
-			//controller.abort()
+			controller.abort()
 		}
 	}, [axiosPrivate, location, navigate, onlineBuddies])
 

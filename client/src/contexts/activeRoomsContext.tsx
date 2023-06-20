@@ -21,7 +21,7 @@ type activeRoomsAction = {
 }
 
 type ChatDetailType = {
-	userId?: string
+	buddyId?: string
 	name?: string
 	email?: string
 	avatar?: string
