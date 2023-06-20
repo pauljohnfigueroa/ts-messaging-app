@@ -45,7 +45,7 @@ type ChildrenType = {
 export const AuthContextProvider = ({ children }: ChildrenType) => {
 	const [state, dispatch] = useReducer(authReducer, initState)
 
-	console.log('AuthContextProvider state:', state)
+	// console.log('AuthContextProvider state:', state)
 	const values = { ...state, dispatch }
 
 	return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>

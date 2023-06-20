@@ -32,7 +32,7 @@ const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         }
         /* Generate a new accessToken */
         const accessToken = jsonwebtoken_1.default.sign({ email: decoded.email }, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '30s'
+            expiresIn: '10s'
         });
         /* Send the new accessToken */
         res.status(200).json({ accessToken });

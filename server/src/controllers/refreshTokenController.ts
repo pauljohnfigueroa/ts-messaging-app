@@ -22,7 +22,7 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
 		}
 		/* Generate a new accessToken */
 		const accessToken = jwt.sign({ email: decoded.email }, process.env.ACCESS_TOKEN_SECRET!, {
-			expiresIn: '30s'
+			expiresIn: '10s'
 		})
 		/* Send the new accessToken */
 		res.status(200).json({ accessToken })

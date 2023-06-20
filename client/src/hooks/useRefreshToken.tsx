@@ -10,14 +10,14 @@ export const useRefreshToken = () => {
 		const response = await axios.get('/refresh', {
 			withCredentials: true
 		})
-
+		const newAccessToken = response.data.accessToken
 		/* refresh the accessToken and also send the authenticated user credentials with it. */
 		dispatch({
 			type: AUTH_ACTION_TYPE.REFRESH,
-			payload: { user: auth.user, accessToken: response.data.accessToken }
+			payload: { user: auth.user, accessToken: newAccessToken }
 		})
-
-		return response.data.accessToken
+		return newAccessToken
 	}
+
 	return refresh
 }

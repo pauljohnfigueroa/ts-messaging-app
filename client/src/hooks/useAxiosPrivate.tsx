@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react'
 import { axiosPrivate } from '../api/axios'
 import { useRefreshToken } from './useRefreshToken'
-import AuthContext from '../contexts/authContext'
+import { useAuthContext } from './useAuthContext'
 
 /* 
 This hook add interceptors to the axiosPrivate 
@@ -9,7 +9,7 @@ For more information about Axios Interceptors
 see, https://axios-http.com/docs/interceptors 
 */
 const useAxiosPrivate = () => {
-	const { auth } = useContext<any>(AuthContext)
+	const { auth }: any = useAuthContext()
 	const refresh = useRefreshToken()
 
 	useEffect(() => {

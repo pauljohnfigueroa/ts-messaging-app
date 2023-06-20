@@ -66,7 +66,7 @@ type ChildrenType = {
 export const ActiveRoomsContextProvider = ({ children }: ChildrenType) => {
 	const [state, dispatch] = useReducer(activeRoomsReducer, initState)
 
-	console.log('ActiveRoomsContextProvider state:', state)
+	// console.log('ActiveRoomsContextProvider state:', state)
 	const values = { ...state, dispatch }
 
 	return <ActiveRoomsContext.Provider value={values}>{children}</ActiveRoomsContext.Provider>

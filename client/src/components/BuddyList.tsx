@@ -41,21 +41,24 @@ const BuddyList = () => {
 		// close any open chat window first
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
 
-		const response = await axiosPrivate.post('/rooms', {
-			name: userId,
-			members: [userId, buddyId]
-		})
-
-		const room = response.data
-		console.log('room._id', room._id)
-
-		// open the chat window
-		// dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
-		dispatch({
-			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
-			payload: { buddyId, name, email, avatar, activeRoom: room._id }
-		})
-		socket.emit('user-private-chat', room._id)
+		try {
+			const response = await axiosPrivate.post('/rooms', {
+				name: userId,
+				members: [userId, buddyId]
+			})
+			const room = response.data
+			// open the chat window
+			// dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
+			dispatch({
+				type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
+				payload: { buddyId, name, email, avatar, activeRoom: room._id }
+			})
+			socket.emit('user-private-chat', room._id)
+		} catch (err) {
+			console.log('Refresh Token expired in OpenChat.')
+			navigate('/login', { state: { from: location }, replace: true })
+		}
+		//console.log('room._id', room._id)
 	}
 
 	/* Fetch all users */
@@ -73,10 +76,10 @@ const BuddyList = () => {
 						isMounted && setBuddies(response.data)
 					})
 					.catch(err => {
-						console.log(err)
+						console.log('BuddyList Axios Error')
 					})
 			} catch (err) {
-				console.log('Refresh Token expired.')
+				console.log('Refresh Token expired in BuddyList.')
 				navigate('/login', { state: { from: location }, replace: true })
 			}
 		}

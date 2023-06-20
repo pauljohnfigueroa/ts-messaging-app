@@ -3,6 +3,9 @@ import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
+
+import { useNavigate, useLocation } from 'react-router-dom'
+
 import uuid from 'react-uuid'
 
 const ChatBox = () => {
@@ -16,6 +19,9 @@ const ChatBox = () => {
 
 	const messageRef = useRef<any>('')
 	const latestMessageRef = useRef<any>(null)
+
+	const navigate = useNavigate()
+	const location = useLocation()
 
 	/* Send a chat message */
 	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -63,9 +69,11 @@ const ChatBox = () => {
 				const response = await axiosPrivate.get(`/messages/${chatDetails.activeRoom}`, {
 					signal: controller.signal
 				})
-				setMessages(response.data)
-			} catch (error: any) {
-				console.log(error.message)
+				isMounted && setMessages(response.data)
+			} catch (err: any) {
+				console.log('Refresh Token expired in messages.')
+				//console.log(error.message)
+				//navigate('/login', { state: { from: location }, replace: true })
 			}
 		}
 		getMessages()
