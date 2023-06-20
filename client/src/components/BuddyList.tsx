@@ -64,13 +64,13 @@ const BuddyList = () => {
 	/* Fetch all users */
 	useEffect(() => {
 		let isMounted = true
-		const controller = new AbortController()
+		//const controller = new AbortController()
 
 		const getUsers = async () => {
 			try {
 				await axiosPrivate
 					.get('/users', {
-						signal: controller.signal
+						//signal: controller.signal
 					})
 					.then(response => {
 						isMounted && setBuddies(response.data)
@@ -88,7 +88,7 @@ const BuddyList = () => {
 		/* clean up */
 		return () => {
 			isMounted = false
-			controller.abort()
+			//controller.abort()
 		}
 	}, [axiosPrivate, location, navigate, onlineBuddies])
 
@@ -135,7 +135,7 @@ const BuddyList = () => {
 												className={
 													onlineBuddies?.includes(buddy._id) || buddy.isOnline
 														? 'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
-														: ''
+														: 'hidden'
 												}
 											></span>
 										</div>

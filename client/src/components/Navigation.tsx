@@ -80,7 +80,7 @@ const Navigation = () => {
 						<button
 							type="button"
 							onClick={logout}
-							className="button text-white bg-violet-500 hover:bg-violet-400"
+							className="hidden sm:block button text-white bg-violet-500 hover:bg-violet-400"
 						>
 							Log out
 						</button>

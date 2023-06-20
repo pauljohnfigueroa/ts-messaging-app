@@ -54,10 +54,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         /* JWT */
         const accessToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '10s'
+            expiresIn: '120s'
         });
         const refreshToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.REFRESH_TOKEN_SECRET, {
-            expiresIn: '20s'
+            expiresIn: '300s'
         });
         /* Save refreshToken to the database */
         const updateUser = yield User_1.default.findOneAndUpdate({ _id: user._id }, { refreshToken, isOnline: true });

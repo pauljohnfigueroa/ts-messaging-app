@@ -4,8 +4,6 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
 
-import { useNavigate, useLocation } from 'react-router-dom'
-
 import uuid from 'react-uuid'
 
 const ChatBox = () => {
@@ -20,9 +18,6 @@ const ChatBox = () => {
 	const messageRef = useRef<any>('')
 	const latestMessageRef = useRef<any>(null)
 
-	const navigate = useNavigate()
-	const location = useLocation()
-
 	/* Send a chat message */
 	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault()
@@ -36,6 +31,7 @@ const ChatBox = () => {
 			})
 
 			// Save the message to the Message collection
+
 			try {
 				await axiosPrivate.post('/messages', {
 					message: messageText,
@@ -62,37 +58,40 @@ const ChatBox = () => {
 	/* Fetch the room's message history */
 	useEffect(() => {
 		let isMounted = true
-		const controller = new AbortController()
-
+		// const controller = new AbortController()
 		const getMessages = async () => {
 			try {
-				const response = await axiosPrivate.get(`/messages/${chatDetails.activeRoom}`, {
-					signal: controller.signal
-				})
-				isMounted && setMessages(response.data)
+				await axiosPrivate
+					.get(`/messages/${chatDetails.activeRoom}`, {
+						// signal: controller.signal
+					})
+					.then(response => {
+						isMounted && setMessages(response.data)
+					})
+					.catch(err => {
+						console.log('Messages Axios Error')
+					})
 			} catch (err: any) {
 				console.log('Refresh Token expired in messages.')
-				//console.log(error.message)
-				//navigate('/login', { state: { from: location }, replace: true })
 			}
 		}
 		getMessages()
 
 		return () => {
 			isMounted = false
-			controller.abort()
+			// controller.abort()
 		}
 	}, [axiosPrivate, chatDetails.activeRoom])
-
-	/* focus the message input */
-	useEffect(() => {
-		messageRef.current.focus()
-	}, [])
 
 	/* scroll to the latest message (bottom) */
 	useEffect(() => {
 		latestMessageRef?.current.scrollIntoView()
 	}, [messages])
+
+	/* focus the message input */
+	useEffect(() => {
+		messageRef.current.focus()
+	}, [])
 
 	return (
 		<div className="relative flex flex-col h-full">
@@ -125,7 +124,7 @@ const ChatBox = () => {
 									`}
 							>
 								<div
-									className={`min-w-[10%] max-w-[40%] break-words rounded-3xl my-1 px-2 
+									className={`min-w-[10%] max-w-[40%] break-words rounded-2xl my-1 px-2 
 										${message.name === auth.user.name ? 'py-4 text-right bg-violet-200' : 'py-4 text-left bg-gray-100'}
 										`}
 								>
