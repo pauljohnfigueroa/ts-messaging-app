@@ -31,7 +31,7 @@ const BuddyList = () => {
 	const { socket }: any = useSocketContext()
 	const { dispatch, onlineBuddies } = useContext<any>(ActiveRoomsContext)
 
-	const [buddies, setUsers] = useState<Buddy[]>([])
+	const [buddies, setBuddies] = useState<Buddy[]>([])
 	const axiosPrivate = useAxiosPrivate()
 
 	const navigate = useNavigate()
@@ -60,17 +60,21 @@ const BuddyList = () => {
 
 	/* Fetch all users */
 	useEffect(() => {
-		// let isMounted = true
+		let isMounted = true
 		const controller = new AbortController()
 
 		const getUsers = async () => {
 			try {
-				const response = await axiosPrivate.get('/users', {
-					//signal: controller.signal
-				})
-				// console.log('response', response.data)
-				// isMounted && setUsers(response.data)
-				setUsers(response.data)
+				await axiosPrivate
+					.get('/users', {
+						signal: controller.signal
+					})
+					.then(response => {
+						isMounted && setBuddies(response.data)
+					})
+					.catch(err => {
+						console.log(err)
+					})
 			} catch (err) {
 				console.log('Refresh Token expired.')
 				navigate('/login', { state: { from: location }, replace: true })
@@ -80,7 +84,7 @@ const BuddyList = () => {
 
 		/* clean up */
 		return () => {
-			// isMounted = false
+			isMounted = false
 			controller.abort()
 		}
 	}, [axiosPrivate, location, navigate, onlineBuddies])
@@ -106,7 +110,7 @@ const BuddyList = () => {
 	return (
 		<article>
 			<h3 className="text-yellow-300 text-2xl font-bold px-3 py-4 tracking-wider">Tok Buddies</h3>
-			{buddies?.length ? (
+			{buddies.length > 0 ? (
 				<ul>
 					{buddies.map(
 						(buddy, i) =>
@@ -127,8 +131,7 @@ const BuddyList = () => {
 											<span
 												className={
 													onlineBuddies?.includes(buddy._id) || buddy.isOnline
-														? //buddy.isOnline
-														  'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
+														? 'bottom-4 right-12 absolute w-3 h-3 bg-green-500  dark:border-gray-800 rounded-full'
 														: ''
 												}
 											></span>

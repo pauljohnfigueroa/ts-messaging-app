@@ -30,7 +30,7 @@ export const authReducer = (state: authState, action: AuthReducerAction): authSt
 		case AUTH_ACTION_TYPE.LOGIN:
 			return { ...state, auth: action.payload }
 		case AUTH_ACTION_TYPE.REFRESH:
-			return { ...state, auth: { accessToken: action.payload } }
+			return { ...state, auth: action.payload }
 		case AUTH_ACTION_TYPE.LOGOUT:
 			return { state: null }
 		default:

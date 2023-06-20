@@ -43,19 +43,6 @@ const ChatBox = () => {
 		setMessageText('')
 	}
 
-	/* Fetch the room's message history */
-	useEffect(() => {
-		const getMessages = async () => {
-			try {
-				const response = await axiosPrivate.get(`/messages/${chatDetails.activeRoom}`)
-				setMessages(response.data)
-			} catch (error: any) {
-				console.log(error.message)
-			}
-		}
-		getMessages()
-	}, [axiosPrivate, chatDetails.activeRoom])
-
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
 		if (socket) {
@@ -65,6 +52,29 @@ const ChatBox = () => {
 			})
 		}
 	}, [socket, messages, setMessages])
+
+	/* Fetch the room's message history */
+	useEffect(() => {
+		let isMounted = true
+		const controller = new AbortController()
+
+		const getMessages = async () => {
+			try {
+				const response = await axiosPrivate.get(`/messages/${chatDetails.activeRoom}`, {
+					signal: controller.signal
+				})
+				setMessages(response.data)
+			} catch (error: any) {
+				console.log(error.message)
+			}
+		}
+		getMessages()
+
+		return () => {
+			isMounted = false
+			controller.abort()
+		}
+	}, [axiosPrivate, chatDetails.activeRoom])
 
 	/* focus the message input */
 	useEffect(() => {
