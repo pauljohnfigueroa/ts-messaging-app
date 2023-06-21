@@ -46,15 +46,15 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     from: 'users',
                     localField: 'sender',
                     foreignField: '_id',
-                    as: 'name'
+                    as: 'sender' // get the document that matches and name it sender
                 }
             },
-            { $unwind: '$name' },
+            { $unwind: '$sender' },
             {
                 $project: {
                     _id: 1,
                     room: '$room',
-                    name: '$name.name',
+                    sender: '$sender.name',
                     message: '$message'
                 }
             }

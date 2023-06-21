@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
         io.to(room).emit('private-message', {
             message,
             room,
-            senderName: socket.userName
+            sender
         });
     });
 });

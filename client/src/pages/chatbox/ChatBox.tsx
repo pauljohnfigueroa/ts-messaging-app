@@ -1,25 +1,33 @@
-import { useState, useContext, useEffect, useRef, MouseEvent } from 'react'
+import { useState, useContext, useEffect, useRef, MouseEvent, KeyboardEvent } from 'react'
+import uuid from 'react-uuid'
+
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
 
-import uuid from 'react-uuid'
+type privateMessagesType = {
+	message: string
+	room: string
+	sender: string
+}
 
 const ChatBox = () => {
 	const { auth }: any = useAuthContext()
 	const { chatDetails, onlineBuddies } = useContext<any>(ActiveRoomsContext)
 
 	const axiosPrivate = useAxiosPrivate()
-	const [messages, setMessages] = useState<any>([])
+	const [messages, setMessages] = useState<privateMessagesType[]>([])
 	const [messageText, setMessageText] = useState<string>('')
 	const { socket }: any = useSocketContext()
 
-	const messageRef = useRef<any>('')
-	const latestMessageRef = useRef<any>(null)
+	const messageRef = useRef<HTMLInputElement>(null)
+	const latestMessageRef = useRef<HTMLDivElement>(null!)
 
 	/* Send a chat message */
-	const handleSendMessage = async (event: MouseEvent<HTMLButtonElement>) => {
+	const handleSendMessage = async (
+		event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>
+	) => {
 		event.preventDefault()
 
 		/* Emit */
@@ -27,11 +35,10 @@ const ChatBox = () => {
 			socket.emit('private-message-sent', {
 				message: messageText,
 				room: chatDetails.activeRoom,
-				sender: auth.user._id
+				sender: auth.user.name
 			})
 
-			// Save the message to the Message collection
-
+			// Save the message to the Message database collection
 			try {
 				await axiosPrivate.post('/messages', {
 					message: messageText,
@@ -48,9 +55,9 @@ const ChatBox = () => {
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
 		if (socket) {
-			socket.on('private-message', async ({ message, room, senderName }: any) => {
+			socket.on('private-message', async ({ message, room, sender }: privateMessagesType) => {
 				// update the messages state
-				setMessages([...messages, { message, room, name: senderName }])
+				setMessages([...messages, { message, room, sender }])
 			})
 		}
 	}, [socket, messages, setMessages])
@@ -66,6 +73,7 @@ const ChatBox = () => {
 						signal: controller.signal
 					})
 					.then(response => {
+						console.log(response.data)
 						isMounted && setMessages(response.data)
 					})
 					.catch(err => {
@@ -92,7 +100,7 @@ const ChatBox = () => {
 
 	/* focus the message input */
 	useEffect(() => {
-		messageRef.current.focus()
+		messageRef?.current?.focus()
 	}, [])
 
 	return (
@@ -126,20 +134,24 @@ const ChatBox = () => {
 			<section className="h-5/6">
 				<div className="px-2 h-[70vh] w-full bg-white overflow-y-auto">
 					{messages.length > 0 &&
-						messages.map((message: any, id: number) => (
+						messages.map((message: privateMessagesType) => (
 							<article
 								key={uuid()}
 								className={`flex
-									${message.name === auth.user.name ? 'text-right justify-end' : 'text-left justify-start'}
+									${message.sender === auth.user.name ? 'text-right justify-end' : 'text-left justify-start'}
 									`}
 							>
 								<div
 									className={`min-w-[10%] max-w-[40%] break-words rounded-2xl my-1 px-2 
-										${message.name === auth.user.name ? 'py-4 text-right bg-violet-200' : 'py-4 text-left bg-gray-100'}
+										${
+											message.sender === auth.user.name
+												? 'py-4 text-right bg-violet-200'
+												: 'py-4 text-left bg-gray-100'
+										}
 										`}
 								>
 									<div className="px-2 py-1 font-bold">
-										{message.name === auth.user.name ? 'You' : message.name}
+										{message.sender === auth.user.name ? 'You' : message.sender}
 									</div>
 									<div className="px-2 py-1">{message.message}</div>
 								</div>

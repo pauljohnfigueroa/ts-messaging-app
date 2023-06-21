@@ -61,6 +61,13 @@ const server = app.listen(PORT, () => {
 	console.log(`SUCCESS - The Server is listening on PORT ${PORT}`)
 })
 
+/* Socket IO related Types */
+type privateMessagesType = {
+	message: string
+	room: string
+	sender: string // sender's name
+}
+
 /* Socket.io */
 const io = new Server(server, {
 	pingTimeout: 60,
@@ -121,11 +128,11 @@ io.on('connection', (socket: any) => {
 	})
 
 	/* A private message was sent. */
-	socket.on('private-message-sent', ({ message, room, sender }: any) => {
+	socket.on('private-message-sent', ({ message, room, sender }: privateMessagesType) => {
 		io.to(room).emit('private-message', {
 			message,
 			room,
-			senderName: socket.userName
+			sender
 		})
 	})
 })

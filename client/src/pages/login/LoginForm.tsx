@@ -1,4 +1,4 @@
-import { useContext, useState, MouseEvent } from 'react'
+import { useContext, useState, MouseEvent, KeyboardEvent } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import axios from '../../api/axios'
@@ -17,7 +17,7 @@ const LoginForm = () => {
 	const location = useLocation()
 	const navigateFrom = location.state?.from?.pathname || '/'
 
-	const login = async (event: MouseEvent<HTMLButtonElement>) => {
+	const login = async (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
 		event.preventDefault()
 
 		try {
@@ -99,7 +99,12 @@ const LoginForm = () => {
 					</button>
 				</div>
 			</form>
-			<p className="p-4 text-yellow-500">Don't have an account? Register Here.</p>
+			<p className="p-4 text-yellow-50">
+				Don't have an account?{' '}
+				<a href="/register">
+					<span className="font-bold text-yellow-300 hover:text-yellow-100">Register Here.</span>
+				</a>
+			</p>
 		</div>
 	)
 }

@@ -34,15 +34,15 @@ export const getMessages = async (req: Request, res: Response) => {
 					from: 'users',
 					localField: 'sender',
 					foreignField: '_id',
-					as: 'name'
+					as: 'sender' // get the document that matches and name it sender
 				}
 			},
-			{ $unwind: '$name' },
+			{ $unwind: '$sender' }, // Deconstructs the sender from the input document
 			{
 				$project: {
 					_id: 1,
 					room: '$room',
-					name: '$name.name',
+					sender: '$sender.name', // pull the name field from the sender object
 					message: '$message'
 				}
 			}
