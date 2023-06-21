@@ -81,7 +81,7 @@ const ChatBox = () => {
 
 		return () => {
 			isMounted = false
-			// controller.abort()
+			controller.abort()
 		}
 	}, [axiosPrivate, chatDetails.activeRoom])
 
@@ -98,7 +98,7 @@ const ChatBox = () => {
 	return (
 		<div className="relative flex flex-col h-full">
 			{/* header */}
-			<div className=" bg-violet-50 p-2 flex gap-2 shadow-lg">
+			<div className=" flex bg-violet-100 p-2 gap-2 shadow-lg">
 				{/* avatar */}
 				<div className="relative">
 					<img
