@@ -4,13 +4,14 @@ interface IMessage {
 	message: string
 	room: Types.ObjectId
 	sender: Types.ObjectId
+	fileType: string
 }
 
 const messageSchema = new Schema<IMessage>(
 	{
 		message: {
 			type: String,
-			required: [true, 'Cannot send an empty message.']
+			required: [true, 'Message is required.']
 		},
 		room: {
 			type: Schema.Types.ObjectId,
@@ -21,6 +22,9 @@ const messageSchema = new Schema<IMessage>(
 			type: Schema.Types.ObjectId,
 			required: [true, 'Sender is required.'],
 			ref: 'User'
+		},
+		fileType: {
+			type: String
 		}
 	},
 	{

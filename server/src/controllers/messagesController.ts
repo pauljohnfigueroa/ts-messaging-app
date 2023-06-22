@@ -6,14 +6,15 @@ const ObjectId = mongoose.Types.ObjectId
 
 export const createMessage = async (req: Request, res: Response) => {
 	try {
-		const { message, room, sender } = req.body
+		const { message, room, sender, fileType } = req.body
+		// if it is a text message
 		const newMessage = new Message({
 			message,
 			room,
-			sender
+			sender,
+			fileType
 		})
 		const savedMessage = await newMessage.save()
-
 		res.status(201).json(savedMessage)
 	} catch (error) {
 		res.status(500).json(error)
@@ -43,7 +44,8 @@ export const getMessages = async (req: Request, res: Response) => {
 					_id: 1,
 					room: '$room',
 					sender: '$sender.name', // pull the name field from the sender object
-					message: '$message'
+					message: '$message',
+					fileType: '$fileType'
 				}
 			}
 		])

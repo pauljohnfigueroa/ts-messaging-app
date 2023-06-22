@@ -12,6 +12,7 @@ type privateMessagesType = {
 	message: string
 	room: string
 	sender: string
+	fileType: string
 }
 
 const ChatBox = () => {
@@ -33,20 +34,21 @@ const ChatBox = () => {
 	) => {
 		event.preventDefault()
 
-		/* Emit */
 		if (socket && messageText.length > 0) {
-			socket.emit('private-message-sent', {
-				message: messageText,
-				room: chatDetails.activeRoom,
-				sender: auth.user.name
-			})
-
 			// Save the message to the Message database collection
 			try {
 				await axiosPrivate.post('/messages', {
 					message: messageText,
 					room: chatDetails.activeRoom,
-					sender: auth.user._id
+					sender: auth.user._id,
+					fileType: ''
+				})
+				/* Emit */
+				socket.emit('private-message-sent', {
+					message: messageText,
+					room: chatDetails.activeRoom,
+					sender: auth.user.name,
+					fileType: ''
 				})
 			} catch (error) {
 				console.log(error)
@@ -55,33 +57,64 @@ const ChatBox = () => {
 		setMessageText('')
 	}
 
+	/* File upload */
 	const onDrop = (files: any) => {
 		setFile(files[0])
 		// Show the file preview
 	}
 
-	const uploadFile = () => {
+	const uploadFile = async () => {
 		console.log('upload clicked')
+
+		// upload file
 		let formData = new FormData()
 		formData.append('file', file)
-		axios.post('/upload', formData)
+		const uploadedFile = await axios.post('/upload', formData)
 
-		// reset after upload
+		// Save the file details to the Message collection
+		try {
+			await axiosPrivate.post('/messages', {
+				message: `${uploadedFile.data.file.destination}/${uploadedFile.data.file.filename}`,
+				room: chatDetails.activeRoom,
+				sender: auth.user._id,
+				fileType: uploadedFile.data.file.mimetype
+			})
+			/* Emit */
+			socket.emit('private-message-sent', {
+				message: `${uploadedFile.data.file.destination}/${uploadedFile.data.file.filename}`,
+				room: chatDetails.activeRoom,
+				sender: auth.user.name,
+				fileType: uploadedFile.data.file.mimetype
+			})
+		} catch (error) {
+			console.log(error)
+		}
+		// clear state after upload
 		setFile(null)
 	}
-	console.log()
+
+	// clear upload button
+	const clearUpload = () => {
+		setFile(null)
+	}
+
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
+		console.log('1')
 		if (socket) {
-			socket.on('private-message', async ({ message, room, sender }: privateMessagesType) => {
-				// update the messages state
-				setMessages([...messages, { message, room, sender }])
-			})
+			socket.on(
+				'private-message',
+				async ({ message, room, sender, fileType }: privateMessagesType) => {
+					// update the messages state
+					setMessages([...messages, { message, room, sender, fileType }])
+				}
+			)
 		}
 	}, [socket, messages, setMessages])
 
 	/* Fetch the room's message history */
 	useEffect(() => {
+		console.log('2')
 		let isMounted = true
 		const controller = new AbortController()
 		const getMessages = async () => {
@@ -112,11 +145,13 @@ const ChatBox = () => {
 
 	/* scroll to the latest message (bottom) */
 	useEffect(() => {
+		console.log('3')
 		latestMessageRef?.current.scrollIntoView()
 	}, [messages])
 
 	/* focus the message input */
 	useEffect(() => {
+		console.log('4')
 		messageRef?.current?.focus()
 	}, [])
 
@@ -170,7 +205,15 @@ const ChatBox = () => {
 									<div className="px-2 py-1 font-bold text-sm">
 										{message.sender === auth.user.name ? 'You' : message.sender}
 									</div>
-									<div className="p-1 text-sm">{message.message}</div>
+									{message.message && message.fileType === 'image/jpeg' ? (
+										<img
+											className="max-w-[200px] max-h-[200px] rounded-lg"
+											src={`http://localhost:8000/${message.message}`}
+											alt={message.message}
+										/>
+									) : (
+										<div className="p-1 text-sm">{message.message}</div>
+									)}
 								</div>
 							</article>
 						))}
@@ -249,12 +292,24 @@ const ChatBox = () => {
 				</div>
 				{file && (
 					<>
-						<div className="absolute bottom-[48px] left-2 bg-white border border-blue-100 rounded-lg p-4">
+						<div className="absolute bottom-[48px] left-2 drop-shadow-md bg-white border border-blue-100 rounded-lg p-4">
+							<div className="absolute right-1 top-1 flex justify-center items-center p-2 rounded-full w-3 h-3 bg-violet-900 hover:bg-violet-700 hover:cursor-pointer">
+								<button
+									type="button"
+									onClick={clearUpload}
+									className="text-sm text-yellow-500 font-bold"
+								>
+									x
+								</button>
+							</div>
 							<img
 								className="overflow-hidden object-cover max-w-[100px] max-h-[100px]"
 								src={URL.createObjectURL(file)}
 							/>
-							<button className="mt-2 text-center border w-full" onClick={uploadFile}>
+							<button
+								className="button mt-2 text-center w-full bg-violet-600 hover:bg-violet-500 text-white"
+								onClick={uploadFile}
+							>
 								Upload
 							</button>
 						</div>

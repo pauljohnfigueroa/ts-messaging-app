@@ -11,6 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upload = void 0;
 const upload = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(201).json({ file: req.file });
+    try {
+        // console.log('req.file', JSON.stringify(req.file))
+        res.status(201).json({ file: req.file });
+    }
+    catch (error) {
+        console.log(error);
+    }
 });
 exports.upload = upload;

@@ -87,6 +87,7 @@ type privateMessagesType = {
 	message: string
 	room: string
 	sender: string // sender's name
+	fileType: string
 }
 
 /* Socket.io Server*/
@@ -149,11 +150,12 @@ io.on('connection', (socket: any) => {
 	})
 
 	/* A private message was sent. */
-	socket.on('private-message-sent', ({ message, room, sender }: privateMessagesType) => {
+	socket.on('private-message-sent', ({ message, room, sender, fileType }: privateMessagesType) => {
 		io.to(room).emit('private-message', {
 			message,
 			room,
-			sender
+			sender,
+			fileType
 		})
 	})
 })

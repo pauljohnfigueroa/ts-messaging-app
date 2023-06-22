@@ -18,11 +18,13 @@ const Message_1 = __importDefault(require("../models/Message"));
 const ObjectId = mongoose_1.default.Types.ObjectId;
 const createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { message, room, sender } = req.body;
+        const { message, room, sender, fileType } = req.body;
+        // if it is a text message
         const newMessage = new Message_1.default({
             message,
             room,
-            sender
+            sender,
+            fileType
         });
         const savedMessage = yield newMessage.save();
         res.status(201).json(savedMessage);
@@ -55,7 +57,8 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     _id: 1,
                     room: '$room',
                     sender: '$sender.name',
-                    message: '$message'
+                    message: '$message',
+                    fileType: '$fileType'
                 }
             }
         ]);

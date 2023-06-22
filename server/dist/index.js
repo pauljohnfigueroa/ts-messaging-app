@@ -129,11 +129,12 @@ io.on('connection', (socket) => {
         socket.join(roomId);
     });
     /* A private message was sent. */
-    socket.on('private-message-sent', ({ message, room, sender }) => {
+    socket.on('private-message-sent', ({ message, room, sender, fileType }) => {
         io.to(room).emit('private-message', {
             message,
             room,
-            sender
+            sender,
+            fileType
         });
     });
 });
