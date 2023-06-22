@@ -46,7 +46,7 @@ app.use(body_parser_1.default.json({ limit: '30mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '30mb', extended: true }));
 /* Public files */
 app.use(express_1.default.static('public'));
-app.use('uploads', express_1.default.static('uploads'));
+app.use('/uploads', express_1.default.static('uploads'));
 /* File uploads */
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
@@ -58,6 +58,7 @@ const storage = multer_1.default.diskStorage({
     }
 });
 var upload = (0, multer_1.default)({ storage: storage });
+/* Routes */
 app.use('/', authRoute_js_1.default);
 app.use('/users', usersRoute_js_1.default);
 app.use('/refresh', refreshTokenRoute_js_1.default);
@@ -66,10 +67,7 @@ app.use('/rooms', roomRoutes_js_1.default);
 app.use('/upload', upload.single('file'), uploadRoutes_js_1.default);
 /* Database server */
 mongoose_1.default
-    .connect(`${process.env.MONGO_URI}`, {
-// useNewUrlParser: true, // <-- no longer necessary as per docs
-// useUnifiedTopology: true, // <-- no longer necessary as per docs
-})
+    .connect(`${process.env.MONGO_URI}`)
     .then(() => {
     console.log('SUCCESS - The Database connected successfully.');
 })
@@ -79,7 +77,7 @@ const PORT = process.env.PORT || 8001;
 const server = app.listen(PORT, () => {
     console.log(`SUCCESS - The Server is listening on PORT ${PORT}`);
 });
-/* Socket.io */
+/* Socket.io Server*/
 const io = new socket_io_1.Server(server, {
     pingTimeout: 60,
     cors: {

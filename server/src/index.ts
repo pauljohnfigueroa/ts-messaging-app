@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import multer from 'multer'
 
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 
 // import corsOptions from './config/corsOptions.js'
 
@@ -46,7 +46,7 @@ app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
 /* Public files */
 app.use(express.static('public'))
-app.use('uploads', express.static('uploads'))
+app.use('/uploads', express.static('uploads'))
 
 /* File uploads */
 const storage = multer.diskStorage({
@@ -60,6 +60,7 @@ const storage = multer.diskStorage({
 })
 var upload = multer({ storage: storage })
 
+/* Routes */
 app.use('/', authRoutes)
 app.use('/users', userRoutes)
 app.use('/refresh', refreshRoutes)
@@ -69,10 +70,7 @@ app.use('/upload', upload.single('file'), uploadRoutes)
 
 /* Database server */
 mongoose
-	.connect(`${process.env.MONGO_URI}`, {
-		// useNewUrlParser: true, // <-- no longer necessary as per docs
-		// useUnifiedTopology: true, // <-- no longer necessary as per docs
-	})
+	.connect(`${process.env.MONGO_URI}`)
 	.then(() => {
 		console.log('SUCCESS - The Database connected successfully.')
 	})
@@ -84,14 +82,14 @@ const server = app.listen(PORT, () => {
 	console.log(`SUCCESS - The Server is listening on PORT ${PORT}`)
 })
 
-/* Socket IO related Types */
+/* Socket IO Types */
 type privateMessagesType = {
 	message: string
 	room: string
 	sender: string // sender's name
 }
 
-/* Socket.io */
+/* Socket.io Server*/
 const io = new Server(server, {
 	pingTimeout: 60,
 	cors: {

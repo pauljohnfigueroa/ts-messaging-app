@@ -22,6 +22,7 @@ const ChatBox = () => {
 	const [messages, setMessages] = useState<privateMessagesType[]>([])
 	const [messageText, setMessageText] = useState<string>('')
 	const { socket }: any = useSocketContext()
+	const [file, setFile]: any = useState(null)
 
 	const messageRef = useRef<HTMLInputElement>(null)
 	const latestMessageRef = useRef<HTMLDivElement>(null!)
@@ -55,18 +56,20 @@ const ChatBox = () => {
 	}
 
 	const onDrop = (files: any) => {
-		// console.log('File', files)
-		let formData = new FormData()
-
-		const config = {
-			header: { 'content-type': 'multipart/form-data' }
-		}
-
-		formData.append('file', files[0])
-
-		axios.post('/upload', formData)
+		setFile(files[0])
+		// Show the file preview
 	}
 
+	const uploadFile = () => {
+		console.log('upload clicked')
+		let formData = new FormData()
+		formData.append('file', file)
+		axios.post('/upload', formData)
+
+		// reset after upload
+		setFile(null)
+	}
+	console.log()
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
 		if (socket) {
@@ -145,7 +148,7 @@ const ChatBox = () => {
 				</div>
 			</div>
 			{/* chat messages */}
-			<section className="h-5/6">
+			<section className="h-5/6 relative">
 				<div className="px-2 h-[70vh] w-full bg-white overflow-y-auto">
 					{messages.length > 0 &&
 						messages.map((message: privateMessagesType) => (
@@ -194,6 +197,7 @@ const ChatBox = () => {
 						/>
 					</svg>
 					{/* upload photo svg */}
+
 					<Dropzone onDrop={onDrop}>
 						{({ getRootProps, getInputProps }) => (
 							<section>
@@ -243,31 +247,48 @@ const ChatBox = () => {
 						)}
 					</Dropzone>
 				</div>
+				{file && (
+					<>
+						<div className="absolute bottom-[48px] left-2 bg-white border border-blue-100 rounded-lg p-4">
+							<img
+								className="overflow-hidden object-cover max-w-[100px] max-h-[100px]"
+								src={URL.createObjectURL(file)}
+							/>
+							<button className="mt-2 text-center border w-full" onClick={uploadFile}>
+								Upload
+							</button>
+						</div>
+					</>
+				)}
 				<form className="flex w-full">
 					{/* Chat message text input */}
-					<input
-						type="text"
-						id="message"
-						name="message"
-						value={messageText}
-						ref={messageRef}
-						onChange={e => setMessageText(e.target.value)}
-						className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
-					/>
+					{!file && (
+						<input
+							type="text"
+							id="message"
+							name="message"
+							value={messageText}
+							ref={messageRef}
+							onChange={e => setMessageText(e.target.value)}
+							className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
+						/>
+					)}
 					{/* Send message button */}
-					<button
-						disabled={messageText.length ? false : true}
-						type="submit"
-						onClick={handleSendMessage}
-						className={`rounded-tr-full rounded-br-full font-bold 
+					{!file && (
+						<button
+							disabled={messageText.length ? false : true}
+							type="submit"
+							onClick={handleSendMessage}
+							className={`rounded-tr-full rounded-br-full font-bold 
 							${
 								messageText.length
 									? 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
 									: 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
 							}`}
-					>
-						Send
-					</button>
+						>
+							Send
+						</button>
+					)}
 				</form>
 			</div>
 		</div>
