@@ -1,9 +1,10 @@
-import express, { Request } from 'express'
+import express, { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+import multer from 'multer'
 
 import { Server } from 'socket.io'
 
@@ -15,6 +16,11 @@ import userRoutes from './routes/usersRoute.js'
 import refreshRoutes from './routes/refreshTokenRoute.js'
 import messageRoutes from './routes/messageRoute.js'
 import roomRoutes from './routes/roomRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
+
+/* Types */
+type DestinationCallback = (error: Error | null, destination: string) => void
+type FileNameCallback = (error: Error | null, filename: string) => void
 
 const app = express()
 dotenv.config()
@@ -38,11 +44,28 @@ app.use(cookieParser())
 app.use(bodyParser.json({ limit: '30mb' }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
+/* Public files */
+app.use(express.static('public'))
+app.use('uploads', express.static('uploads'))
+
+/* File uploads */
+const storage = multer.diskStorage({
+	destination: (req: Request, file: Express.Multer.File, cb: DestinationCallback) => {
+		cb(null, 'uploads')
+	},
+	filename: (req: Request, file: Express.Multer.File, cb: FileNameCallback) => {
+		const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`
+		cb(null, `${file.fieldname}-${uniqueSuffix}`)
+	}
+})
+var upload = multer({ storage: storage })
+
 app.use('/', authRoutes)
 app.use('/users', userRoutes)
 app.use('/refresh', refreshRoutes)
 app.use('/messages', messageRoutes)
 app.use('/rooms', roomRoutes)
+app.use('/upload', upload.single('file'), uploadRoutes)
 
 /* Database server */
 mongoose

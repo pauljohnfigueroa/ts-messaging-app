@@ -1,5 +1,7 @@
 import { useState, useContext, useEffect, useRef, MouseEvent, KeyboardEvent } from 'react'
 import uuid from 'react-uuid'
+import Dropzone from 'react-dropzone'
+import axios from '../../api/axios'
 
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
@@ -52,6 +54,19 @@ const ChatBox = () => {
 		setMessageText('')
 	}
 
+	const onDrop = (files: any) => {
+		// console.log('File', files)
+		let formData = new FormData()
+
+		const config = {
+			header: { 'content-type': 'multipart/form-data' }
+		}
+
+		formData.append('file', files[0])
+
+		axios.post('/upload', formData)
+	}
+
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
 		if (socket) {
@@ -73,7 +88,6 @@ const ChatBox = () => {
 						signal: controller.signal
 					})
 					.then(response => {
-						console.log(response.data)
 						isMounted && setMessages(response.data)
 					})
 					.catch(err => {
@@ -119,7 +133,7 @@ const ChatBox = () => {
 					<span
 						className={
 							onlineBuddies.includes(chatDetails.buddyId)
-								? 'bottom-0 left-7 absolute  w-3.5 h-3.5 bg-green-600 border-2 border-white-500 dark:border-gray-800 rounded-full'
+								? 'bottom-0 left-7 absolute w-3.5 h-3.5 bg-green-600 border-2 border-white-500 dark:border-gray-800 rounded-full'
 								: ''
 						}
 					></span>
@@ -145,15 +159,15 @@ const ChatBox = () => {
 									className={`min-w-[10%] max-w-[40%] break-words rounded-2xl my-1 px-2 
 										${
 											message.sender === auth.user.name
-												? 'py-4 text-right bg-violet-200'
-												: 'py-4 text-left bg-gray-100'
+												? 'py-2 text-right bg-violet-200'
+												: 'py-2 text-left bg-gray-100'
 										}
 										`}
 								>
-									<div className="px-2 py-1 font-bold">
+									<div className="px-2 py-1 font-bold text-sm">
 										{message.sender === auth.user.name ? 'You' : message.sender}
 									</div>
-									<div className="px-2 py-1">{message.message}</div>
+									<div className="p-1 text-sm">{message.message}</div>
 								</div>
 							</article>
 						))}
@@ -180,35 +194,54 @@ const ChatBox = () => {
 						/>
 					</svg>
 					{/* upload photo svg */}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="w-6 h-6"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-						/>
-					</svg>
+					<Dropzone onDrop={onDrop}>
+						{({ getRootProps, getInputProps }) => (
+							<section>
+								<div {...getRootProps()}>
+									<input {...getInputProps()} />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										strokeWidth={1.5}
+										stroke="currentColor"
+										className="w-6 h-6 hover:cursor-pointer"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+										/>
+									</svg>
+								</div>
+							</section>
+						)}
+					</Dropzone>
+
 					{/* upload svg */}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="w-6 h-6"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15"
-						/>
-					</svg>
+					<Dropzone onDrop={onDrop}>
+						{({ getRootProps, getInputProps }) => (
+							<section>
+								<div {...getRootProps()}>
+									<input {...getInputProps()} />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										strokeWidth={1.5}
+										stroke="currentColor"
+										className="w-6 h-6 hover:cursor-pointer"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15"
+										/>
+									</svg>
+								</div>
+							</section>
+						)}
+					</Dropzone>
 				</div>
 				<form className="flex w-full">
 					{/* Chat message text input */}

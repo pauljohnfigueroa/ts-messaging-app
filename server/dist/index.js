@@ -18,6 +18,7 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const multer_1 = __importDefault(require("multer"));
 const socket_io_1 = require("socket.io");
 // import corsOptions from './config/corsOptions.js'
 /* Route handlers */
@@ -26,6 +27,7 @@ const usersRoute_js_1 = __importDefault(require("./routes/usersRoute.js"));
 const refreshTokenRoute_js_1 = __importDefault(require("./routes/refreshTokenRoute.js"));
 const messageRoute_js_1 = __importDefault(require("./routes/messageRoute.js"));
 const roomRoutes_js_1 = __importDefault(require("./routes/roomRoutes.js"));
+const uploadRoutes_js_1 = __importDefault(require("./routes/uploadRoutes.js"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const corsOptions = {
@@ -42,11 +44,26 @@ app.use((0, cookie_parser_1.default)());
 /* Required by req.body, works in tandem with express.json() */
 app.use(body_parser_1.default.json({ limit: '30mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '30mb', extended: true }));
+/* Public files */
+app.use(express_1.default.static('public'));
+app.use('uploads', express_1.default.static('uploads'));
+/* File uploads */
+const storage = multer_1.default.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`;
+        cb(null, `${file.fieldname}-${uniqueSuffix}`);
+    }
+});
+var upload = (0, multer_1.default)({ storage: storage });
 app.use('/', authRoute_js_1.default);
 app.use('/users', usersRoute_js_1.default);
 app.use('/refresh', refreshTokenRoute_js_1.default);
 app.use('/messages', messageRoute_js_1.default);
 app.use('/rooms', roomRoutes_js_1.default);
+app.use('/upload', upload.single('file'), uploadRoutes_js_1.default);
 /* Database server */
 mongoose_1.default
     .connect(`${process.env.MONGO_URI}`, {

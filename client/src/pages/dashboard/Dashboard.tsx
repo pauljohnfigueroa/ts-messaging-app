@@ -1,25 +1,14 @@
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import Navigation from '../../components/Navigation'
-// import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import ChatBox from '../chatbox/ChatBox'
 
 import ActiveRoomsContext from '../../contexts/activeRoomsContext'
-import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
 
 const Dashboard = () => {
 	const { auth }: any = useAuthContext()
-	const { socket }: any = useSocketContext()
 	const { chatBoxOpen } = useContext<any>(ActiveRoomsContext)
-
-	useEffect(() => {
-		if (socket) {
-			socket.on('hello', (message: string) => {
-				console.log(message)
-			})
-		}
-	}, [socket])
 
 	return (
 		<div className="flex flex-col md:grid md:grid-cols-12 h-screen sm:h-screen">
