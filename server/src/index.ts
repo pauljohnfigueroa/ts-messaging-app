@@ -26,7 +26,7 @@ const app = express()
 dotenv.config()
 
 const corsOptions = {
-	origin: ['http://localhost:3000'],
+	origin: ['http://localhost:3000', 'http://192.168.1.10:3000'],
 	credentials: true,
 	optionsSuccessStatus: 200
 }
@@ -94,7 +94,7 @@ type privateMessagesType = {
 const io = new Server(server, {
 	pingTimeout: 60,
 	cors: {
-		origin: 'http://localhost:3000',
+		origin: 'http://192.168.1.10:3000',
 		methods: ['get', 'post']
 	}
 })

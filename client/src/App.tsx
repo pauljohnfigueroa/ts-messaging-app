@@ -20,7 +20,7 @@ function App() {
 	/* Initialize the socket */
 	useEffect(() => {
 		if (isAuth && !socket) {
-			const newSocket = io('http://localhost:8000', {
+			const newSocket = io('http://192.168.1.10:8000', {
 				/* autoConnect is set to false so the connection
 				is not established right away.
 				We will manually call socket.connect() later,

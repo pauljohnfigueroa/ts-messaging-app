@@ -36,8 +36,8 @@ const ChatBox = () => {
 	const [file, setFile]: any = useState(null)
 
 	const messageRef = useRef<HTMLInputElement>(null)
-	const latestMessageRef = useRef<HTMLDivElement>(null!)
 
+	// called in useEffect()
 	const getMessages = useCallback(async () => {
 		let isMounted = true
 		const controller = new AbortController()
@@ -64,7 +64,6 @@ const ChatBox = () => {
 	}, [axiosPrivate, chatDetails.activeRoom])
 
 	// const changeHandler = (val: string) => {
-	// 	// console.log(val)
 	// 	setMessageText(val)
 	// }
 
@@ -80,7 +79,7 @@ const ChatBox = () => {
 		// this will trigger a re-render of the ChatBox component
 		setMessageText(message)
 
-		if (socket && message) {
+		if ((socket && message) || messageText) {
 			// Save the message to the Message database collection
 			try {
 				await axiosPrivate.post('/messages', {
@@ -105,19 +104,17 @@ const ChatBox = () => {
 			setMessageText('')
 			messageRef.current.value = ''
 			messageRef?.current?.focus()
-			latestMessageRef?.current.scrollIntoView()
+			// latestMessageRef?.current.scrollIntoView()
 		}
 	}
 
 	/* File upload */
 	const onDrop = (files: any) => {
 		setFile(files[0])
-		// Show the file preview
+		// latestMessageRef?.current.scrollIntoView()
 	}
 
 	const uploadFile = async () => {
-		// console.log('upload clicked')
-
 		// upload file
 		let formData = new FormData()
 		formData.append('file', file)
@@ -141,8 +138,12 @@ const ChatBox = () => {
 		} catch (error) {
 			console.log(error)
 		}
-		// clear state after upload
 		setFile(null)
+		// clear and refocus after sending
+		if (messageRef.current) {
+			messageRef?.current?.focus()
+			// latestMessageRef?.current.scrollIntoView()
+		}
 	}
 
 	// clear upload button
@@ -152,7 +153,6 @@ const ChatBox = () => {
 
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
-		// console.log('socket.on')
 		if (socket) {
 			socket.on(
 				'private-message',
@@ -171,13 +171,11 @@ const ChatBox = () => {
 
 	/* scroll to the latest message (bottom) */
 	useEffect(() => {
-		// console.log('scrollIntoView')
-		latestMessageRef.current.scrollIntoView()
+		// latestMessageRef.current.scrollIntoView()
 	}, [messages])
 
 	/* focus the message input */
 	useEffect(() => {
-		// console.log('focus')
 		messageRef?.current?.focus()
 	}, [])
 
@@ -210,17 +208,16 @@ const ChatBox = () => {
 			</div>
 			{/* chat messages */}
 			<section className="h-5/6 relative">
-				<div className="px-2 h-[100%] md:h-[70vh] w-full bg-white overflow-y-auto">
-					{/* show the latest message */}
-					<MessageHistory messages={messages} />
-					<div ref={latestMessageRef} />
-				</div>
+				<MessageHistory messages={messages} />
 			</section>
 			{/* chat text input */}
-			{/* <div className="">
+
+			{/* Emoji Picker */}
+			{/* <div className="mb-16 ml-2">
 				<EmojiPicker />
 			</div> */}
-			<div className="flex absolute bottom-0 justify-between p-2 w-full bg-gray-100">
+
+			<div className="flex absolute bottom-0 justify-between p-2 w-full h-16 bg-gray-100">
 				<div className="flex gap-4 justify-end items-center px-1 lg:px-4 w-1/6">
 					{/* Emoji */}
 					<svg
@@ -290,37 +287,36 @@ const ChatBox = () => {
 						</div>
 					</>
 				)}
-				{!file && (
-					<form className="flex w-full">
-						{/* Chat message text input */}
 
-						<input
-							type="text"
-							id="message"
-							name="message"
-							// value={messageText}
-							ref={messageRef}
-							// onChange={e => changeHandler(e.target.value)}
-							className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
-						/>
+				<form className="flex w-full">
+					{/* Chat message text input */}
+					<input
+						disabled={file ? true : false}
+						type="text"
+						id="message"
+						name="message"
+						// value={messageText}
+						ref={messageRef}
+						// onChange={e => changeHandler(e.target.value)}
+						className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
+					/>
 
-						{/* Send message button */}
+					{/* Send message button */}
 
-						<button
-							disabled={messageRef.current ? false : true}
-							type="submit"
-							onClick={handleSendMessage}
-							className={`rounded-tr-full rounded-br-full font-bold 
+					<button
+						disabled={file ? true : false}
+						type="submit"
+						onClick={handleSendMessage}
+						className={`rounded-tr-full rounded-br-full font-bold 
 							${
-								messageRef.current
-									? 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
-									: 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
+								file
+									? 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
+									: 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
 							}`}
-						>
-							Send
-						</button>
-					</form>
-				)}
+					>
+						Send
+					</button>
+				</form>
 			</div>
 		</div>
 	)

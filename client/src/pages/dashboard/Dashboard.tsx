@@ -11,14 +11,14 @@ const Dashboard = () => {
 	const { chatBoxOpen } = useContext<any>(ActiveRoomsContext)
 
 	return (
-		<div className="flex flex-col md:grid md:grid-cols-12 h-screen sm:h-screen">
-			<div className="flex flex-col col-span-12 md:col-span-3">
+		<div className="flex flex-col lg:grid lg:grid-cols-12 h-screen md:h-screen">
+			<div className="flex flex-col col-span-12 lg:col-span-3">
 				<section>
 					{/* Logo */}
 					<h1 className="h-20 text-yellow-50 text-5xl bg-violet-700 font-bold px-2 py-4 tracking-wider">
 						Tokativ
 					</h1>
-					<div className="hidden sm:flex items-center justify-center bg-violet-700 px-8">
+					<div className="hidden lg:flex items-center justify-center bg-violet-700 px-8">
 						<img
 							src={auth.user.avatar}
 							alt={auth.user.name}
@@ -27,12 +27,12 @@ const Dashboard = () => {
 					</div>
 				</section>
 				{/* Sidebar */}
-				<section className="hidden md:block md:h-full md:w-full bg-violet-700">
+				<section className="hidden md:block lg:h-full md:w-full bg-violet-700">
 					<Sidebar />
 				</section>
 			</div>
 			{/* Main */}
-			<main className="flex flex-col col-span-12 md:col-span-9 h-full">
+			<main className="flex flex-col col-span-12 lg:col-span-9 h-full">
 				<Navigation />
 				{chatBoxOpen && <ChatBox />}
 

@@ -40,6 +40,10 @@ const BuddyList = () => {
 	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
 		// close any open chat window first
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+		dispatch({
+			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
+			payload: { buddyId: '', name: '', email: '', avatar: '', activeRoom: '' }
+		})
 
 		try {
 			const response = await axiosPrivate.post('/rooms', {
