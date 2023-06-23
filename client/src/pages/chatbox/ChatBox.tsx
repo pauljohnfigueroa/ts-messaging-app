@@ -1,5 +1,14 @@
-import { useState, useContext, useEffect, useRef, MouseEvent, KeyboardEvent } from 'react'
-import uuid from 'react-uuid'
+import {
+	useState,
+	useContext,
+	useEffect,
+	useRef,
+	useCallback,
+	MouseEvent,
+	KeyboardEvent
+} from 'react'
+
+import EmojiPicker from 'emoji-picker-react'
 import Dropzone from 'react-dropzone'
 import axios from '../../api/axios'
 
@@ -7,6 +16,7 @@ import ActiveRoomsContext from '../../contexts/activeRoomsContext'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useSocketContext } from '../../hooks/useSocketContext'
 import { useAuthContext } from '../../hooks/useAuthContext'
+import MessageHistory from '../../components/MessageHistory'
 
 type privateMessagesType = {
 	message: string
@@ -21,12 +31,42 @@ const ChatBox = () => {
 
 	const axiosPrivate = useAxiosPrivate()
 	const [messages, setMessages] = useState<privateMessagesType[]>([])
-	const [messageText, setMessageText] = useState<string>('')
+	const [messageText, setMessageText] = useState<string | undefined>('')
 	const { socket }: any = useSocketContext()
 	const [file, setFile]: any = useState(null)
 
 	const messageRef = useRef<HTMLInputElement>(null)
 	const latestMessageRef = useRef<HTMLDivElement>(null!)
+
+	const getMessages = useCallback(async () => {
+		let isMounted = true
+		const controller = new AbortController()
+		try {
+			await axiosPrivate
+				.get(`/messages/${chatDetails.activeRoom}`, {
+					signal: controller.signal
+				})
+				.then(response => {
+					isMounted && setMessages(response.data)
+				})
+				.catch(err => {
+					if (err.name === 'CanceledError') {
+						console.log('CanceledError in messages.')
+					}
+				})
+		} catch (err: any) {
+			console.log('Refresh Token expired in messages.')
+		}
+		return () => {
+			isMounted = false
+			controller.abort()
+		}
+	}, [axiosPrivate, chatDetails.activeRoom])
+
+	// const changeHandler = (val: string) => {
+	// 	// console.log(val)
+	// 	setMessageText(val)
+	// }
 
 	/* Send a chat message */
 	const handleSendMessage = async (
@@ -34,18 +74,24 @@ const ChatBox = () => {
 	) => {
 		event.preventDefault()
 
-		if (socket && messageText.length > 0) {
+		// get the message from ref
+		const message: string | undefined = messageRef?.current?.value
+
+		// this will trigger a re-render of the ChatBox component
+		setMessageText(message)
+
+		if (socket && message) {
 			// Save the message to the Message database collection
 			try {
 				await axiosPrivate.post('/messages', {
-					message: messageText,
+					message: message,
 					room: chatDetails.activeRoom,
 					sender: auth.user._id,
 					fileType: ''
 				})
 				/* Emit */
 				socket.emit('private-message-sent', {
-					message: messageText,
+					message: message,
 					room: chatDetails.activeRoom,
 					sender: auth.user.name,
 					fileType: ''
@@ -54,7 +100,13 @@ const ChatBox = () => {
 				console.log(error)
 			}
 		}
-		setMessageText('')
+		// clear and refocus text box after sending
+		if (messageRef.current) {
+			setMessageText('')
+			messageRef.current.value = ''
+			messageRef?.current?.focus()
+			latestMessageRef?.current.scrollIntoView()
+		}
 	}
 
 	/* File upload */
@@ -64,7 +116,7 @@ const ChatBox = () => {
 	}
 
 	const uploadFile = async () => {
-		console.log('upload clicked')
+		// console.log('upload clicked')
 
 		// upload file
 		let formData = new FormData()
@@ -100,7 +152,7 @@ const ChatBox = () => {
 
 	/* Update the message window when a chat message is sent or received. */
 	useEffect(() => {
-		console.log('1')
+		// console.log('socket.on')
 		if (socket) {
 			socket.on(
 				'private-message',
@@ -114,44 +166,18 @@ const ChatBox = () => {
 
 	/* Fetch the room's message history */
 	useEffect(() => {
-		console.log('2')
-		let isMounted = true
-		const controller = new AbortController()
-		const getMessages = async () => {
-			try {
-				await axiosPrivate
-					.get(`/messages/${chatDetails.activeRoom}`, {
-						signal: controller.signal
-					})
-					.then(response => {
-						isMounted && setMessages(response.data)
-					})
-					.catch(err => {
-						if (err.name === 'CanceledError') {
-							console.log('CanceledError in messages.')
-						}
-					})
-			} catch (err: any) {
-				console.log('Refresh Token expired in messages.')
-			}
-		}
 		getMessages()
-
-		return () => {
-			isMounted = false
-			controller.abort()
-		}
-	}, [axiosPrivate, chatDetails.activeRoom])
+	}, [getMessages])
 
 	/* scroll to the latest message (bottom) */
 	useEffect(() => {
-		console.log('3')
-		latestMessageRef?.current.scrollIntoView()
+		// console.log('scrollIntoView')
+		latestMessageRef.current.scrollIntoView()
 	}, [messages])
 
 	/* focus the message input */
 	useEffect(() => {
-		console.log('4')
+		// console.log('focus')
 		messageRef?.current?.focus()
 	}, [])
 
@@ -184,47 +210,19 @@ const ChatBox = () => {
 			</div>
 			{/* chat messages */}
 			<section className="h-5/6 relative">
-				<div className="px-2 h-[70vh] w-full bg-white overflow-y-auto">
-					{messages.length > 0 &&
-						messages.map((message: privateMessagesType) => (
-							<article
-								key={uuid()}
-								className={`flex
-									${message.sender === auth.user.name ? 'text-right justify-end' : 'text-left justify-start'}
-									`}
-							>
-								<div
-									className={`min-w-[10%] max-w-[40%] break-words rounded-2xl my-1 px-2 
-										${
-											message.sender === auth.user.name
-												? 'py-2 text-right bg-violet-200'
-												: 'py-2 text-left bg-gray-100'
-										}
-										`}
-								>
-									<div className="px-2 py-1 font-bold text-sm">
-										{message.sender === auth.user.name ? 'You' : message.sender}
-									</div>
-									{message.message && message.fileType === 'image/jpeg' ? (
-										<img
-											className="max-w-[200px] max-h-[200px] rounded-lg"
-											src={`http://localhost:8000/${message.message}`}
-											alt={message.message}
-										/>
-									) : (
-										<div className="p-1 text-sm">{message.message}</div>
-									)}
-								</div>
-							</article>
-						))}
+				<div className="px-2 h-[100%] md:h-[70vh] w-full bg-white overflow-y-auto">
 					{/* show the latest message */}
+					<MessageHistory messages={messages} />
 					<div ref={latestMessageRef} />
 				</div>
 			</section>
 			{/* chat text input */}
+			{/* <div className="">
+				<EmojiPicker />
+			</div> */}
 			<div className="flex absolute bottom-0 justify-between p-2 w-full bg-gray-100">
-				<div className="flex justify-between items-center px-1 lg:px-4 w-1/6">
-					{/* smiley */}
+				<div className="flex gap-4 justify-end items-center px-1 lg:px-4 w-1/6">
+					{/* Emoji */}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -240,7 +238,6 @@ const ChatBox = () => {
 						/>
 					</svg>
 					{/* upload photo svg */}
-
 					<Dropzone onDrop={onDrop}>
 						{({ getRootProps, getInputProps }) => (
 							<section>
@@ -264,36 +261,12 @@ const ChatBox = () => {
 							</section>
 						)}
 					</Dropzone>
-
-					{/* upload svg */}
-					<Dropzone onDrop={onDrop}>
-						{({ getRootProps, getInputProps }) => (
-							<section>
-								<div {...getRootProps()}>
-									<input {...getInputProps()} />
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										strokeWidth={1.5}
-										stroke="currentColor"
-										className="w-6 h-6 hover:cursor-pointer"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15"
-										/>
-									</svg>
-								</div>
-							</section>
-						)}
-					</Dropzone>
 				</div>
 				{file && (
 					<>
 						<div className="absolute bottom-[48px] left-2 drop-shadow-md bg-white border border-blue-100 rounded-lg p-4">
 							<div className="absolute right-1 top-1 flex justify-center items-center p-2 rounded-full w-3 h-3 bg-violet-900 hover:bg-violet-700 hover:cursor-pointer">
+								{/* close button */}
 								<button
 									type="button"
 									onClick={clearUpload}
@@ -302,9 +275,11 @@ const ChatBox = () => {
 									x
 								</button>
 							</div>
+							{/* Image preview */}
 							<img
 								className="overflow-hidden object-cover max-w-[100px] max-h-[100px]"
 								src={URL.createObjectURL(file)}
+								alt={file.name}
 							/>
 							<button
 								className="button mt-2 text-center w-full bg-violet-600 hover:bg-violet-500 text-white"
@@ -315,36 +290,37 @@ const ChatBox = () => {
 						</div>
 					</>
 				)}
-				<form className="flex w-full">
-					{/* Chat message text input */}
-					{!file && (
+				{!file && (
+					<form className="flex w-full">
+						{/* Chat message text input */}
+
 						<input
 							type="text"
 							id="message"
 							name="message"
-							value={messageText}
+							// value={messageText}
 							ref={messageRef}
-							onChange={e => setMessageText(e.target.value)}
+							// onChange={e => changeHandler(e.target.value)}
 							className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
 						/>
-					)}
-					{/* Send message button */}
-					{!file && (
+
+						{/* Send message button */}
+
 						<button
-							disabled={messageText.length ? false : true}
+							disabled={messageRef.current ? false : true}
 							type="submit"
 							onClick={handleSendMessage}
 							className={`rounded-tr-full rounded-br-full font-bold 
 							${
-								messageText.length
+								messageRef.current
 									? 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
 									: 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
 							}`}
 						>
 							Send
 						</button>
-					)}
-				</form>
+					</form>
+				)}
 			</div>
 		</div>
 	)
