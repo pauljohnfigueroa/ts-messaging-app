@@ -158,4 +158,10 @@ io.on('connection', (socket: any) => {
 			fileType
 		})
 	})
+
+	/* Leave room */
+	socket.on('leave-previous-room', (roomId: string) => {
+		socket.leave(roomId)
+		console.log('user left', roomId)
+	})
 })

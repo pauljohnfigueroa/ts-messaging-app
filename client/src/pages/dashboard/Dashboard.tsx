@@ -35,7 +35,6 @@ const Dashboard = () => {
 			<main className="flex flex-col col-span-12 lg:col-span-9 h-full">
 				<Navigation />
 				{chatBoxOpen && <ChatBox />}
-
 				{/* Cards */}
 			</main>
 		</div>

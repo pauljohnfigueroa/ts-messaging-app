@@ -29,7 +29,7 @@ type ChatProps = (
 const BuddyList = () => {
 	const { auth }: any = useAuthContext()
 	const { socket }: any = useSocketContext()
-	const { dispatch, onlineBuddies } = useContext<any>(ActiveRoomsContext)
+	const { dispatch, onlineBuddies, chatDetails } = useContext<any>(ActiveRoomsContext)
 
 	const [buddies, setBuddies] = useState<Buddy[]>([])
 	const axiosPrivate = useAxiosPrivate()
@@ -40,9 +40,12 @@ const BuddyList = () => {
 	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
 		// close any open chat window first
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+		if (chatDetails) {
+			socket.emit('leave-previous-room', chatDetails.activeRoom)
+		}
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
-			payload: { buddyId: '', name: '', email: '', avatar: '', activeRoom: '' }
+			payload: {}
 		})
 
 		try {

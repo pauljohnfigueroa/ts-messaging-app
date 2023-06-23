@@ -137,4 +137,9 @@ io.on('connection', (socket) => {
             fileType
         });
     });
+    /* Leave room */
+    socket.on('leave-previous-room', (roomId) => {
+        socket.leave(roomId);
+        console.log('user left', roomId);
+    });
 });
