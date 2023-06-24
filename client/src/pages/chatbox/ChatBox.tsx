@@ -63,9 +63,9 @@ const ChatBox = () => {
 		}
 	}, [axiosPrivate, chatDetails.activeRoom])
 
-	// const changeHandler = (val: string) => {
-	// 	setMessageText(val)
-	// }
+	const changeHandler = (val: string) => {
+		setMessageText(val)
+	}
 
 	/* Send a chat message */
 	const handleSendMessage = async (
@@ -74,23 +74,23 @@ const ChatBox = () => {
 		event.preventDefault()
 
 		// get the message from ref
-		const message: string | undefined = messageRef?.current?.value
+		//const message: string | undefined = messageRef?.current?.value
 
 		// this will trigger a re-render of the ChatBox component
-		setMessageText(message)
+		// setMessageText(message)
 
-		if ((socket && message) || messageText) {
+		if (socket && messageText) {
 			// Save the message to the Message database collection
 			try {
 				await axiosPrivate.post('/messages', {
-					message: message,
+					message: messageText,
 					room: chatDetails.activeRoom,
 					sender: auth.user._id,
 					fileType: ''
 				})
 				/* Emit */
 				socket.emit('private-message-sent', {
-					message: message,
+					message: messageText,
 					room: chatDetails.activeRoom,
 					sender: auth.user.name,
 					fileType: ''
@@ -295,9 +295,9 @@ const ChatBox = () => {
 						type="text"
 						id="message"
 						name="message"
-						// value={messageText}
+						value={messageText}
 						ref={messageRef}
-						// onChange={e => changeHandler(e.target.value)}
+						onChange={e => changeHandler(e.target.value)}
 						className="bg-white border focus:outline-0 rounded-tl-full rounded-bl-full p-2 block w-5/6"
 					/>
 
@@ -309,9 +309,9 @@ const ChatBox = () => {
 						onClick={handleSendMessage}
 						className={`rounded-tr-full rounded-br-full font-bold 
 							${
-								file
-									? 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
-									: 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
+								messageText
+									? 'bg-violet-500 hover:bg-violet-600 text-white block w-1/6'
+									: 'bg-gray-400 text-gray-700 block w-1/6 cursor-not-allowed'
 							}`}
 					>
 						Send

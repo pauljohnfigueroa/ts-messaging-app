@@ -137,9 +137,10 @@ io.on('connection', (socket) => {
             fileType
         });
     });
-    /* Leave room */
+    /* Leave room. Also used when switching chat windows in the front-end */
     socket.on('leave-previous-room', (roomId) => {
-        socket.leave(roomId);
-        console.log('user left', roomId);
+        if (roomId) {
+            socket.leave(roomId);
+        }
     });
 });

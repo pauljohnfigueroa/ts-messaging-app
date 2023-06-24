@@ -40,15 +40,18 @@ const BuddyList = () => {
 	const openChat: ChatProps = async (userId, buddyId, name, email, avatar) => {
 		// close any open chat window first
 		dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: false })
+		// leave the previous room to avoid cross-talk to other room
 		if (chatDetails) {
 			socket.emit('leave-previous-room', chatDetails.activeRoom)
 		}
+		// clear the chat details
 		dispatch({
 			type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
 			payload: {}
 		})
 
 		try {
+			// get the room id
 			const response = await axiosPrivate.post('/rooms', {
 				name: userId,
 				members: [userId, buddyId]
@@ -56,10 +59,12 @@ const BuddyList = () => {
 			const room = response.data
 			// open the chat window
 			dispatch({ type: ACTIVE_ROOMS_ACTION_TYPES.CHAT_BOX_OPEN, payload: true })
+			// set the chat details
 			dispatch({
 				type: ACTIVE_ROOMS_ACTION_TYPES.SET_CHAT_DETAILS,
 				payload: { buddyId, name, email, avatar, activeRoom: room._id }
 			})
+			// join room
 			socket.emit('user-private-chat', room._id)
 		} catch (err) {
 			console.log('Refresh Token expired in OpenChat.')

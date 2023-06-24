@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, memo } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
 import uuid from 'react-uuid'
 
@@ -65,4 +65,4 @@ const MessageHistory = ({ messages }: any) => {
 	)
 }
 
-export default MessageHistory
+export default memo(MessageHistory)

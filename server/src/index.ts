@@ -159,9 +159,10 @@ io.on('connection', (socket: any) => {
 		})
 	})
 
-	/* Leave room */
+	/* Leave room. Also used when switching chat windows in the front-end */
 	socket.on('leave-previous-room', (roomId: string) => {
-		socket.leave(roomId)
-		console.log('user left', roomId)
+		if (roomId) {
+			socket.leave(roomId)
+		}
 	})
 })
