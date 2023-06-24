@@ -1,14 +1,6 @@
-import {
-	useState,
-	useContext,
-	useEffect,
-	useRef,
-	useCallback,
-	MouseEvent,
-	KeyboardEvent
-} from 'react'
+import { useState, useContext, useEffect, useRef, MouseEvent, KeyboardEvent } from 'react'
 
-import EmojiPicker from 'emoji-picker-react'
+import EmojiPicker, { Emoji } from 'emoji-picker-react'
 import Dropzone from 'react-dropzone'
 import axios from '../../api/axios'
 
@@ -34,37 +26,25 @@ const ChatBox = () => {
 	const [messageText, setMessageText] = useState<string | undefined>('')
 	const { socket }: any = useSocketContext()
 	const [file, setFile]: any = useState(null)
+	const [emojiOpen, setEmojiOpen] = useState(false)
 
 	const messageRef = useRef<HTMLInputElement>(null)
 
-	// called in useEffect()
-	const getMessages = useCallback(async () => {
-		let isMounted = true
-		const controller = new AbortController()
-		try {
-			await axiosPrivate
-				.get(`/messages/${chatDetails.activeRoom}`, {
-					signal: controller.signal
-				})
-				.then(response => {
-					isMounted && setMessages(response.data)
-				})
-				.catch(err => {
-					if (err.name === 'CanceledError') {
-						console.log('CanceledError in messages.')
-					}
-				})
-		} catch (err: any) {
-			console.log('Refresh Token expired in messages.')
-		}
-		return () => {
-			isMounted = false
-			controller.abort()
-		}
-	}, [axiosPrivate, chatDetails.activeRoom])
-
 	const changeHandler = (val: string) => {
+		setEmojiOpen(false)
 		setMessageText(val)
+	}
+
+	const emojiPicker = () => {
+		if (file) {
+			setFile(null)
+		}
+		setEmojiOpen(!emojiOpen)
+	}
+
+	const onEmojiClick = (data: any) => {
+		console.log(data)
+		setMessageText(`${messageText}${data.emoji}`)
 	}
 
 	/* Send a chat message */
@@ -72,12 +52,6 @@ const ChatBox = () => {
 		event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>
 	) => {
 		event.preventDefault()
-
-		// get the message from ref
-		//const message: string | undefined = messageRef?.current?.value
-
-		// this will trigger a re-render of the ChatBox component
-		// setMessageText(message)
 
 		if (socket && messageText) {
 			// Save the message to the Message database collection
@@ -102,16 +76,19 @@ const ChatBox = () => {
 		// clear and refocus text box after sending
 		if (messageRef.current) {
 			setMessageText('')
+			setEmojiOpen(false)
 			messageRef.current.value = ''
 			messageRef?.current?.focus()
-			// latestMessageRef?.current.scrollIntoView()
 		}
 	}
 
 	/* File upload */
+	const openFileUpload = () => {
+		setEmojiOpen(false)
+	}
+
 	const onDrop = (files: any) => {
 		setFile(files[0])
-		// latestMessageRef?.current.scrollIntoView()
 	}
 
 	const uploadFile = async () => {
@@ -142,7 +119,6 @@ const ChatBox = () => {
 		// clear and refocus after sending
 		if (messageRef.current) {
 			messageRef?.current?.focus()
-			// latestMessageRef?.current.scrollIntoView()
 		}
 	}
 
@@ -166,13 +142,32 @@ const ChatBox = () => {
 
 	/* Fetch the room's message history */
 	useEffect(() => {
+		const getMessages = async () => {
+			let isMounted = true
+			const controller = new AbortController()
+			try {
+				await axiosPrivate
+					.get(`/messages/${chatDetails.activeRoom}`, {
+						signal: controller.signal
+					})
+					.then(response => {
+						isMounted && setMessages(response.data)
+					})
+					.catch(err => {
+						if (err.name === 'CanceledError') {
+							console.log('CanceledError in messages.')
+						}
+					})
+			} catch (err: any) {
+				console.log('Refresh Token expired in messages.')
+			}
+			return () => {
+				isMounted = false
+				controller.abort()
+			}
+		}
 		getMessages()
-	}, [getMessages])
-
-	/* scroll to the latest message (bottom) */
-	useEffect(() => {
-		// latestMessageRef.current.scrollIntoView()
-	}, [messages])
+	}, [axiosPrivate, chatDetails.activeRoom])
 
 	/* focus the message input */
 	useEffect(() => {
@@ -213,27 +208,31 @@ const ChatBox = () => {
 			{/* chat text input */}
 
 			{/* Emoji Picker */}
-			{/* <div className="mb-16 ml-2">
-				<EmojiPicker />
-			</div> */}
+			<div className="mb-16 ml-2">{emojiOpen && <EmojiPicker onEmojiClick={onEmojiClick} />}</div>
 
 			<div className="flex absolute bottom-0 justify-between p-2 w-full h-16 bg-gray-100">
 				<div className="flex gap-4 justify-end items-center px-1 lg:px-4 w-1/6">
 					{/* Emoji */}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="w-6 h-6"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
-						/>
-					</svg>
+					{/* <p>
+						My Favorite emoji is:
+						<Emoji unified="1f423" size={25} />
+					</p> */}
+					<button type="button" onClick={emojiPicker}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="w-6 h-6"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
+							/>
+						</svg>
+					</button>
 					{/* upload photo svg */}
 					<Dropzone onDrop={onDrop}>
 						{({ getRootProps, getInputProps }) => (
@@ -241,6 +240,7 @@ const ChatBox = () => {
 								<div {...getRootProps()}>
 									<input {...getInputProps()} />
 									<svg
+										onClick={openFileUpload}
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
 										viewBox="0 0 24 24"
