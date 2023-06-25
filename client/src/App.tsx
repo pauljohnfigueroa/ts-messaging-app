@@ -17,10 +17,10 @@ function App() {
 	/* check if the user is authenticated */
 	const isAuth = Boolean(auth?.accessToken)
 
-	/* Initialize the socket */
+	/* Initialize Socket.io */
 	useEffect(() => {
 		if (isAuth && !socket) {
-			const newSocket = io('http://192.168.1.10:8000', {
+			const newSocket = io(`${process.env.REACT_APP_SERVER}`, {
 				/* autoConnect is set to false so the connection
 				is not established right away.
 				We will manually call socket.connect() later,

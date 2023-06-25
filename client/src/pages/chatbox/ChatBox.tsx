@@ -37,6 +37,7 @@ const ChatBox = () => {
 
 	const emojiPicker = () => {
 		if (file) {
+			// clear file if it exists in state
 			setFile(null)
 		}
 		setEmojiOpen(!emojiOpen)
@@ -84,15 +85,18 @@ const ChatBox = () => {
 
 	/* File upload */
 	const openFileUpload = () => {
+		// make sure the emoji picker closes
+		// whenever the file upload dialog is open
 		setEmojiOpen(false)
 	}
 
+	/* Select file for upload */
 	const onDrop = (files: any) => {
 		setFile(files[0])
 	}
 
+	/* Upload button */
 	const uploadFile = async () => {
-		// upload file
 		let formData = new FormData()
 		formData.append('file', file)
 		const uploadedFile = await axios.post('/upload', formData)
@@ -122,7 +126,7 @@ const ChatBox = () => {
 		}
 	}
 
-	// clear upload button
+	// clear file state
 	const clearUpload = () => {
 		setFile(null)
 	}

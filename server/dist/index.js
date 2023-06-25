@@ -31,7 +31,8 @@ const uploadRoutes_js_1 = __importDefault(require("./routes/uploadRoutes.js"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://192.168.1.10:3000'],
+    // origin: ['http://localhost:3000', 'http://192.168.1.10:3000', ],
+    origin: process.env.CLIENT,
     credentials: true,
     optionsSuccessStatus: 200
 };
@@ -81,7 +82,7 @@ const server = app.listen(PORT, () => {
 const io = new socket_io_1.Server(server, {
     pingTimeout: 60,
     cors: {
-        origin: 'http://192.168.1.10:3000',
+        origin: process.env.CLIENT,
         methods: ['get', 'post']
     }
 });

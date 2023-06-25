@@ -50,7 +50,7 @@ const MessageHistory = ({ messages }: any) => {
 								{message.fileType === 'image/jpeg' ? (
 									<img
 										className="max-w-[100%] max-h-[40%] rounded-lg"
-										src={`http://192.168.1.10:8000/${message.message}`}
+										src={`${process.env.REACT_APP_SERVER}/${message.message}`}
 										alt={message.message}
 									/>
 								) : (
